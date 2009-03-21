@@ -1,0 +1,21 @@
+require 'rubygems'
+
+spec = Gem::Specification.new do |s|
+  s.name         = "extcsv"
+  s.version      = "0.10.0"
+  s.author       = "Ralf Mueller"
+  s.email        = "stark.dreamdetective@gmail.com"
+  s.homepage     = "http://extcsv.rubyforge.org"
+  s.platform     = Gem::Platform::RUBY
+  s.summary      = "Let CSV-like files behave like DB-tables: selection, data operations on columns. \n" +
+                   "Easy plotting with gnuplot and modelling"
+  candidates     = Dir.glob("lib/*.rb") +
+                   ["rakefile","gemspec"]
+  s.files        = candidates.delete_if do |item|
+                     item.include?(".hg") || item.include?("doc")
+                   end
+  s.test_files   = Dir.glob("test/test_*.rb") + Dir.glob("test/data/*.{csv,txt}")
+  s.has_rdoc     = true
+end
+
+# vim:ft=ruby
