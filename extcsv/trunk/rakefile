@@ -125,7 +125,7 @@ task :edit do
   visual_mode = (ENV["vimode"].nil?) ? '-p' : ENV["vimode"]
   com = (File.exist?("Session.vim"))\
     ? 'vim -S'\
-    : "vim #{SPEC.candidates.join(" ")} rakefile #{visual_mode}"
+    : "vim #{SPEC.files.join(" ")} rakefile #{visual_mode}"
   puts com
   system(com)
 end
