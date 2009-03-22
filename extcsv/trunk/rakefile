@@ -69,25 +69,25 @@ task :build_dev do
 end
 # ====================================================================
 desc "Install the Library with docs"
-task :install => [:repackage] do
+task :install do
   command = "gem install pkg/#{SPEC.name}-#{SPEC.version}.gem"
   puts command
   system(command)
 end
-task :smallInstall => [:repackage,:binstall] do 
+task :smallInstall do 
   command = "gem install pkg/#{SPEC.name}-#{SPEC.version}.gem --no-ri --no-rdoc"
   puts command
   system(command)
 end
-desc "Only install what is in bin to /usr/local/bin"
-task :binstall do
-  if File.directory?('/usr/local/bin')
-    bins = Dir.glob("bin/*.rb")
-    command = "install -m 755 #{bins.join(' ')} /usr/local/bin"
-    puts command
-    system(command)
-  end
-end
+#desc "Only install what is in bin to /usr/local/bin"
+#task :binstall do
+#  if File.directory?('/usr/local/bin')
+#    bins = Dir.glob("bin/*.rb")
+#    command = "install -m 755 #{bins.join(' ')} /usr/local/bin"
+#    puts command
+#    system(command)
+#  end
+#end
 # ====================================================================
 desc "All"
 task :all => [:install, :populate] do
