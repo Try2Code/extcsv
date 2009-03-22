@@ -97,7 +97,7 @@ end
 # Create a task to build the RDOC documentation tree.
 Rake::RDocTask.new("rdoc") { |rdoc|
   rdoc.rdoc_dir = 'doc'
-  rdoc.title    = "Tube_Data - Library for processing QPOL, Datalogger, csv and Scope Data"
+  rdoc.title    = "extcsv - Make csv-like Data file like DB-tables"
   rdoc.options << '-ad' << '--line-numbers' << '--inline-source'
   rdoc.rdoc_files.include('lib/**/*.rb', 'doc/**/*.rdoc')
 }

@@ -718,7 +718,7 @@ class ExtCsvExporter
     xml
   end
 
-  # Create files of types, that are allowed the Tube_Exporter.to_string
+  # Create files of types, that are allowed by ExtCsvExporter.to_string
   def to_file(file, filetype=nil)
     # Create the output directory
     dir      = File.dirname(File.expand_path(file))
