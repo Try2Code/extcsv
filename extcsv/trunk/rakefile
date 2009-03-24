@@ -99,7 +99,7 @@ Rake::RDocTask.new("rdoc") { |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title    = "extcsv - Make csv-like Data feel ike DB-tables"
   rdoc.options << '-ad' << '--line-numbers' << '--inline-source'
-  rdoc.rdoc_files.include('lib/**/*.rb', 'doc/**/*.rdoc')
+  rdoc.rdoc_files.include('lib/{extcsv,lsmodel}.rb', 'doc/**/*.rdoc')
 }
 
 ############################################################
