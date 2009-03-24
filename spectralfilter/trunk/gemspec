@@ -6,7 +6,7 @@ spec = Gem::Specification.new do |s|
   s.author       = "Ralf Müller"
   s.email        = "stark.dreamdetective@gmail.com"
   s.platform     = Gem::Platform::RUBY
-  s.summary      = "Filtering Datasets via Highpass,Lowpass,Bandpass or Bandblock"
+  s.summary      = "Filtering Datasets via Highpass, Lowpass, Bandpass or Bandblock"
   candidates     = Dir.glob("lib/*.rb") + [ "rakefile", "gemspec","LICENSE"]
   s.files        = candidates.delete_if do |item|
                      item.include?("pkg") || item.include?("www") || item.include?("rdoc")
