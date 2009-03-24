@@ -8,9 +8,9 @@ spec = Gem::Specification.new do |s|
   s.homepage     = "http://extcsv.rubyforge.org/correlation"
   s.platform     = Gem::Platform::RUBY
   s.summary      = "Extension of GSL: Compute correaltion of 2 datasets"
-  candidates     = Dir.glob("lib/*.rb") + [ "rakefile", "gemspec"]
+  candidates     = Dir.glob("lib/*.rb") + [ "rakefile", "gemspec","LICENSE"]
   s.files        = candidates.delete_if do |item|
-                     item.include?(".hg") || item.include?("doc")
+                     item.include?("www") || item.include?("pkg") || item.include?("doc")
                    end
   s.require_path = "lib"
   s.test_files   = Dir.glob("test/test_*.rb")
