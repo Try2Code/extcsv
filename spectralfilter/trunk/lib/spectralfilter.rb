@@ -48,7 +48,7 @@ class SpectralFilter
   end
 
   # Display the spectrum
-  def plotSpec(opts="-C -g 3 -x 0 #{@sampling} -X 'Frequency [Hz]'")
+  def plotSpec(opts="-C -g 3 -x 0 #{@sampling/2} -X 'Frequency [Hz]'")
     mag, phase, frq = proc4plot
     GSL::graph(frq, mag, opts)
   end
