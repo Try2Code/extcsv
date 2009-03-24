@@ -5,6 +5,7 @@ spec = Gem::Specification.new do |s|
   s.version      = "0.0.1"
   s.author       = "Ralf Müller"
   s.email        = "stark.dreamdetective@gmail.com"
+  s.homepage     = "http://rubyforge.org/projects/extcsv"
   s.platform     = Gem::Platform::RUBY
   s.summary      = "Filtering Datasets via Highpass, Lowpass, Bandpass or Bandblock"
   candidates     = Dir.glob("lib/*.rb") + [ "rakefile", "gemspec","LICENSE"]

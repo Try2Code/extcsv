@@ -4,8 +4,8 @@ require 'mathn'
 class SpectralFilter
   attr_accessor :x,:y,:fft,:sampling
 
-  # x and y can be Arrays of Floats or GSL:Vector. The sampling attribute
-  # should be checked and changed carefully if necessary
+  # x and y can be Arrays of Floats or GSL:Vectors. The sampling attribute
+  # should be checked and changed carefully if necessary.
   def initialize(x, y)
     @x, @y    = [x,y].collect {|v| v.kind_of?(Array) ? GSL::Vector.alloc(v) : v}
     @sampling = ((@x[-1]-@x[0])/@x.size)**(-1)
