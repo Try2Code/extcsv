@@ -1,0 +1,96 @@
+begin	
+  require 'rubygems'
+  require 'rake/gempackagetask'
+rescue Exception
+  nil
+end
+require 'rake/clean'
+require 'rake/testtask'
+require 'rake/rdoctask'
+
+SPEC = eval(File.open("gemspec","r").read)
+
+def filename_to_sym(filename)
+  File.basename(filename,File.extname(filename)).to_sym
+end
+
+# ====================================================================
+# TEST TASKS
+test_tasks = {
+  :test_all   => ["Run all tests"],
+}
+# Syntax checkning task
+task :test_syn do
+  Dir.glob("**/*.rb").each {|file|
+    printf "Checking Syntax of #{file} ..."
+    system("ruby -c #{file}")
+  }
+end
+# Test tasks for each test file
+SPEC.test_files.each do |test_file|
+  next unless File.extname(test_file) == ".rb"
+  Rake::TestTask.new(filename_to_sym(test_file)) do |t|
+    test_tasks[:test_all]  << filename_to_sym(test_file)
+    t.test_files = FileList[test_file]
+    t.warning = false
+    t.verbose = true
+  end
+end
+
+# Test Tasks for groups of test files
+test_tasks.each do |k,v|
+  desc  v[0]
+  task k => v[1..-1]
+end
+# ====================================================================
+# Create a task that will package the software into distributable
+# tar, zip and gem files.
+if ! defined?(Gem)
+  puts "Package Target requires RubyGEMs"
+else
+  package_task = Rake::GemPackageTask.new(SPEC) do |pkg|
+    pkg.need_zip = false
+    pkg.need_tar = false
+  end
+end
+# ====================================================================
+desc "Install the Library with docs"
+task :install => [:repackage] do
+  command = "gem install pkg/#{SPEC.name}-#{SPEC.version}.gem"
+  puts command
+  system(command)
+end
+task :smallInstall => [:repackage] do 
+  command = "gem install pkg/#{SPEC.name}-#{SPEC.version}.gem --no-ri --no-rdoc"
+  puts command
+  system(command)
+end
+# ====================================================================
+# Create a task to build the RDOC documentation tree.
+Rake::RDocTask.new("rdoc") { |rdoc|
+  rdoc.rdoc_dir = 'rdoc'
+  rdoc.title    = "Correlation Function as GSL Extension"
+  rdoc.options << '-ad' << '--line-numbers' << '--inline-source'
+  rdoc.rdoc_files.include('lib/**/*.rb', 'doc/**/*.rdoc')
+}
+############################################################
+files       = Dir.glob("{lib,test}/*.rb")
+visual_mode = (ENV["vimode"].nil?) ? '-p' : ENV["vimode"]
+desc "Edit texfiles #{files.join(", ")}"
+task :edit do
+  com = (File.exist?("Session.vim"))\
+    ? 'vim -S'\
+    : "vim #{files.join(" ")} rakefile gemspec #{visual_mode}"
+  puts com
+  system(com)
+end
+############################################################
+desc "renew the tags file"
+task :tags do
+  com = "rtags --vi -f tags lib/*.rb"
+  system(com)
+end
+#
+#
+# vim:ft=ruby
+#
