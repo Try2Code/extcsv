@@ -2,15 +2,21 @@ require 'rubygems'
 require 'csv'
 require 'ostruct'
 
-################################################################################
-# Author:: Ralf Mueller
-################################################################################
 class Nil
   def to_s; ''; end
   def to_a; []; end
   def empty?; true; end
 end
 
+# = CSV-like Data processing made easy
+# (see project page: http://rubyforge.org/projects/extcsv)
+#
+# The extcsv package should enable you to navigate and operate on csv-like data
+# as easy and comfortable as possible. The main restriction is, that the
+# columns are names, i.e. the first line of a data file has to contain a header with string-like entries.
+#
+# Data can be read from files, strings, hashes or arrays.
+#
 class ExtCsv < OpenStruct
   VERSION = '0.10.0'
 
@@ -21,7 +27,7 @@ class ExtCsv < OpenStruct
   TYPES = %w{csv tsv psv txt plain}
 
   # Allowed input modes, db and url are not supported, yet
-  MODES = %w{file db url hash array string}
+  MODES = %w{file hash array string}
 
   # column names from different file type, which that have the same
   # meaning
