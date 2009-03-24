@@ -3,7 +3,7 @@ require "rbgsl"
 # This Extension of the GNU Scientific Library bindings by Yoshiki Tsunesada
 # (http://rb-gsl.rubyforge.org) provides the computation of the correlation of two
 # GSL::Vectors. It is implemented as a method of a GSL::Vector for most easy
-# usage. 
+# usage. see project page: http://rubyforge.org/projects/extcsv
 class GSL::Vector
 
   # Follow the usual definition, e.g. from Sheriff and Geldart "Exploitation
