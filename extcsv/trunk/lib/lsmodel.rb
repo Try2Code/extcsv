@@ -1,7 +1,7 @@
 require 'matrix'
 require 'mathn'
 
-# Modelling funtionality with the least square mathod
+# Modelling funtionality with the least square method
 module LSModel
   MINIMAL_VARIATION_SIZE = 8
 
