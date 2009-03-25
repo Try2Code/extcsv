@@ -13,10 +13,12 @@ end
 #
 # The extcsv package should enable you to navigate and operate on csv-like data
 # as easy and comfortable as possible. The main restriction is, that the
-# columns are names, i.e. the first line of a data file has to contain a header with string-like entries.
+# columns are named, i.e. the first line of a data file has to contain a header with string-like entries.
 #
 # Data can be read from files, strings, hashes or arrays.
 #
+# Have a look at my other projects for
+# correlation[http://extcsv.rubyforge.org/correlation] and {spectral filtering}[http://extcsv.rubyforge.org/spectralfilter].
 class ExtCsv < OpenStruct
   VERSION = '0.10.0'
 
