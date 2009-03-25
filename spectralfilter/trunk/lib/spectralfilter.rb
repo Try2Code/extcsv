@@ -1,6 +1,8 @@
 require 'rbgsl'
 require 'mathn'
 
+# = Spectral analysis and filtering
+# project page: http://rubyforge.org/projects/extcsv
 class SpectralFilter
   attr_accessor :x,:y,:fft,:sampling
 
