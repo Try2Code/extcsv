@@ -462,17 +462,17 @@ class ExtCsv < OpenStruct
 
   # :call-seq:
   # split.(:col0,...,:colN) {|obj| ...}
-  # splot.(:col0,...,:coln) -> [obj0,...,objM]
+  # split.(:col0,...,:coln) -> [obj0,...,objM]
   # 
   # split is a multi-key-version of each_obj. the receiver is splitted into
   # subobject, which have constant values in all given columns
   #
   # eg.
-  # <tt>qpol.split(:kv, :focus) {|little_qp| little_qp.kv == little_kv.uniq}</tt>
+  # <tt>obj.split(:kv, :focus) {|little_obj| little_obj.kv == little_kv.uniq}</tt>
   #
   # or
   #
-  # <tt>qpol.split(:kv, :focus) = [qpol_0,...,qpol_N]</tt>
+  # <tt>obj.split(:kv, :focus) = [obj_0,...,obj_N]</tt>
   def split(*columns, &block)
     retval = []
     deep_split(columns, retval)
@@ -662,7 +662,7 @@ class ExtCsv < OpenStruct
   def ExtCsv.combine(obj, obj_=nil)
     obj.combine(obj_)
   end
-  private :deep_copy, :set_separators, :parse_content
+  private :deep_copy, :deep_split, :set_separators, :parse_content, :change_time_format
 end
 
 class ExtCsvExporter
