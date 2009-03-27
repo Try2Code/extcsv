@@ -2,135 +2,127 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
-	<meta name="author" content="Ralf Mueller" />
-	<meta name="keywords" content="csv, data processing, ruby, gsl" />
-	<meta name="description" content="Introduction to extcsvand related projects." />
-	<meta name="robots" content="all" />
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+  <meta name="author" content="Ralf Mueller" />
+  <meta name="keywords" content="csv, data processing, ruby, gsl" />
+  <meta name="description" content="Introduction to extcsvand related projects." />
+  <meta name="robots" content="all" />
 
-	<title>ExtCsv: Data Processing made easy</title>
-	<!-- to correct the unsightly Flash of Unstyled Content. http://www.bluerobot.com/web/css/fouc.asp -->
-	<script type="text/javascript"></script>
-	
-	<style type="text/css" media="all">
-		@import "leaf.css";
-	</style>
-	
+  <title>ExtCsv: Data Processing made easy</title>
+  <script type="text/javascript"></script>
+  
+  <style type="text/css" media="all">
+    @import "leaf.css";
+  </style>
+  
 </head>
 
 <body onload="window.defaultStatus='Extended CSV Data Processing';" id="extcsv">
 
 <div id="container">
-	<div id="intro">
-		<div id="pageHeader">
-			<h1><span>ExtCsv</span></h1>
-			<h2><span>easy data processing</span></h2>
-		</div>
+  <div id="intro">
+    <div id="pageHeader">
+      <h1><span>ExtCsv</span></h1>
+      <h2><span>easy data processing</span></h2>
+    </div>
 
-		<div id="quickSummary">
-			<p class="p1"><span>Introduction to the extcsv package, which provides a comfortable usage of csv-like files</span></p>
+    <div id="quickSummary">
+      <p class="p1"><span>Introduction to the extcsv package, which provides a comfortable usage of csv-like files</span></p>
                         <!-- <p class="p2"><span>Links to realted project for further data analyses</span></p> -->
-		</div>
+    </div>
 
-		<div id="preamble">
-			<h3><span>The Problem</span></h3>
-			<p class="p1"><span>From many sources you can get csv-like datasets: all kinds of measurement systems, webservices, the girl next door, a scope ...</span></p>
+    <div id="preamble">
+      <h3><span>The Problem</span></h3>
+      <p class="p1"><span>From many sources you can get csv-like datasets: all kinds of measurement systems, webservices, the girl next door, a scope ...</span></p>
                         <p class="p2"><span>You can do it the <acronym title="which leads to the dark side">fast way</acronym> and use MSExcel. But the problem is: What do you do, if the format slightly changes?</span></p>
-			<p class="p3"><span>Macros tend to break down. And even if VBA is your best friend, the fancy preformatting facilities of MSExcel will catch you. Not to mention the problem of number notation depending of the language of your intallation.</span></p>
-		</div>
-	</div>
+      <p class="p3"><span>Macros tend to break down. And even if VBA is your best friend, the fancy preformatting facilities of MSExcel will catch you. Not to mention the problem of number notation depending of the language of your intallation.</span></p>
+    </div>
+  </div>
 
-	<div id="supportingText">
-		<div id="explanation">
-			<h3><span>So What is This About?</span></h3>
-                        <p class="p1"><span>The extcsv library provides methods for easy navigation through the datasets by <a href="http://extcsv.rubyforge.org/rdoc/classes/ExtCsv.html#M000007">selectBy</a>. This method accepts multiple keys (which are treated as columns names) and values or comparison operators for values. Additionally regular expressions can be used as selection criteria.</span></p>
-                        <p class="p2"><span>Splitting: ExtCsv objects can be splitted by the different values of oe or more columns (<a href="http://extcsv.rubyforge.org/rdoc/classes/ExtCsv.html#M000027">split</a>) </span></p>
-                        <p class="p3"><span>Iteration: With <a href="http://extcsv.rubyforge.org/rdoc/classes/ExtCsv.html#M000025">each_by</a> and <a href="http://extcsv.rubyforge.org/rdoc/classes/ExtCsv.html#M000026">each_obj</a>, it is possible to iterate over the differrent values of a column or over objects (i.e. datasets), where these different values are constant.</span></p>
-                        <p class="p4"><span>Comparison: Through the <a href="http://www.ruby-doc.org/core/classes/Comparable.html">Comparable module</a> ExtCsv objects can be sortet.</span></p>
-                        <p class="p5"><span>Combination: Objects from files with the same structure can easily be concatenated with <a href="http://extcsv.rubyforge.org/rdoc/classes/ExtCsv.html#M000040">concat</a>. For differential structured object, the <a href="http://extcsv.rubyforge.org/rdoc/classes/ExtCsv.html#M000043">combine</a> method can do simple merging.</span></p>
-                        <p class="p6"><span>For more info, please have a look at the  <a href="http://extcsv.rubyforge.org/rdoc/index.html">rdoc documention</a> and the <a href="http://extcsv.rubyforge.org/svn/extcsv/trunk/test">test files</a>.</span></p>
-                        <p class="p7"><span>Plotting is still under developement. It will be done with gnuplot.</span></p>
-		</div>
+  <div id="supportingText">
+    <div id="explanation">
+      <h3><span>So What is This About?</span></h3>
+        <p class="p1"><span>The extcsv library provides methods for easy navigation through the datasets by <a href="http://extcsv.rubyforge.org/rdoc/classes/ExtCsv.html#M000007">selectBy</a>. This method accepts multiple keys (which are treated as columns names) and values or comparison operators for values. Additionally regular expressions can be used as selection criteria.<br/>Additionally datasets can be accessed by the <a href="http://extcsv.rubyforge.org/rdoc/classes/ExtCsv.html#M000038">[]</a> operator know from Ruby arrays</span></p>
+        <p class="p2"><span>Splitting: ExtCsv objects can be splitted by the different values of one or more columns (<a href="http://extcsv.rubyforge.org/rdoc/classes/ExtCsv.html#M000027">split</a>) </span></p>
+        <p class="p3"><span>Iteration: With the <a href="http://www.ruby-doc.org/core/classes/Enumerable.html">Enumerable module</a> included, all its searching/traversal methods can be used. The specific <a href="http://extcsv.rubyforge.org/rdoc/classes/ExtCsv.html#M000025">each_by</a> and <a href="http://extcsv.rubyforge.org/rdoc/classes/ExtCsv.html#M000026">each_obj</a> methods make it possible to iterate over the differrent values of a column or over subobjects, where these different values are constant.</span></p>
+        <p class="p4"><span>Comparison: Through the <a href="http://www.ruby-doc.org/core/classes/Comparable.html">Comparable module</a> ExtCsv objects can be compared or sortet.</span></p>
+        <p class="p5"><span>Combination: Objects from files with the same structure can easily be concatenated with <a href="http://extcsv.rubyforge.org/rdoc/classes/ExtCsv.html#M000040">concat</a>. For differential structured object, the <a href="http://extcsv.rubyforge.org/rdoc/classes/ExtCsv.html#M000043">combine</a> method can do simple merging.</span></p>
+        <p class="p6"><span>For more info, please have a look at the  <a href="http://extcsv.rubyforge.org/rdoc/index.html">rdoc documention</a> and the <a href="http://extcsv.rubyforge.org/svn/extcsv/trunk/test">test files</a>.</span></p>
+        <p class="p7"><span>Plotting is still under developement. It will be done with gnuplot.</span></p>
+    </div>
 
-		<!-- <div id="benefits">
-			<h3><span>Benefits</span></h3>
-			<p class="p1"><span>Why participate? For recognition, inspiration, and a resource we can all refer to when making the case for <acronym title="Cascading Style Sheets">CSS</acronym>-based design. This is sorely needed, even today. More and more major sites are taking the leap, but not enough have. One day this gallery will be a historical curiosity; that day is not today.</span></p>
+    <!-- <div id="benefits">
+      <h3><span>Benefits</span></h3>
+      <p class="p1"><span></span></p>
                       </div>-->
 
-		<div id="requirements">
-			<h3><span>Requirements</span></h3>
-                        <p class="p1"><span>For the basic stuff, Ruby is the
-                          only requirement. For plotting (which will be
-                          included soon), gnuplot and it&#8217;s <acronym
-                            title="type: gem install gnuplot">gem</acronym>
-                          have to be installed. <br/>Gnupot was choosen, because it
-                          is available for many platforms/operating. If win32ole is available, a simple MSEcxel export will implemented.
-                          systems.</span></p>
+    <div id="requirements">
+      <h3><span>Requirements</span></h3>
+                        <p class="p1"><span>For the basic stuff, Ruby is the only requirement. For plotting (which will be included soon), gnuplot and it&#8217;s <acronym title="type: gem install gnuplot">gem</acronym> have to be installed. <br/>Gnupot was choosen, because it is available for many platforms/operating. If win32ole is available, a simple MSEcxel export will implemented. systems.</span></p>
                         <!-- 
                         <p class="p2"><span></span></p>
-			<p class="p3"><span></span></p>
-			<p class="p4"><span></span></p>
+                        <p class="p3"><span></span></p>
+                        <p class="p4"><span></span></p>
                         <p class="p5"><span></span></p> 
                         -->
-		</div>
+    </div>
 
-		<div id="participation">
-			<h3><span>Participate</span></h3>
-			<p class="p1"><span>You have suggestions, feature requests, ideas, diffs, criticsm? GREAT!</span></p>
+    <div id="participation">
+      <h3><span>Participate</span></h3>
+      <p class="p1"><span>You have suggestions, feature requests, ideas, diffs, criticsm? GREAT!</span></p>
                         <p class="p2"><span>Drop me a line {stark.dreamdetective(-,-)gmail.com} and I will answer as soon as possible.</span></p>
-			<p class="p3"><span></span></p>
-		</div>
+      <p class="p3"><span></span></p>
+    </div>
 
-		<div id="footer">
-			<a href="http://www.ruby-lang.org" title="The Ruby Language">ruby</a> &nbsp; 
-			<a href="http://www.gnuplot.info" title="plot the hell out of your data">gnuplot</a> &nbsp; 
-			<a href="http://rubyforge.org" title="Thanks Tom!">rubyforge</a> &nbsp;
-			<a href="http://www.gnu.org/software/gsl" title="GNU Scientific Library">gsl</a> &nbsp;
-		</div>
+    <div id="footer">
+      <a href="http://www.ruby-lang.org" title="The Ruby Language">ruby</a> &nbsp; 
+      <a href="http://www.gnuplot.info" title="plot the hell out of your data">gnuplot</a> &nbsp; 
+      <a href="http://rubyforge.org" title="Thanks Tom!">rubyforge</a> &nbsp;
+      <a href="http://www.gnu.org/software/gsl" title="GNU Scientific Library">gsl</a> &nbsp;
+    </div>
 
-	</div>
+  </div>
 
-	
-	<div id="linkList">
-		<!--extra div for flexibility - this list will probably be the trickiest spot you'll deal with -->
-		<div id="linkList2">
-
-		<!-- If you're wondering about the extra &nbsp; at the end of the link, it's a hack to meet WCAG 1 Accessibility. -->
-		<!-- I don't like having to do it, but this is a visual exercise. It's a compromise. -->
-			<div id="lselect">
-				<h3 class="select"><span>Select a related project:</span></h3>
-				<!-- list of links begins here. There will be no more than 8 links per page -->
-				<ul>
-					<li><a href="http://extcsv.rubyforge.org/correlation">correlation</a> by <a href="http://rubyforge.org/users/lem/" class="c">Ralf M&uuml;ller</a>&nbsp;</li>
-					<li><a href="http://extcsv.rubyforge.org/spectralfilter">spectralfilter</a> by <a href="http://rubyforge.org/users/lem/" class="c">Ralf M&uuml;ller</a>&nbsp;</li>
-                                        <li><a href="http://rb-gsl.rubyforge.org">rb-gsl</a> by Yoshiki Tsunesada&nbsp;</li>
-                                        <li><a href="http://rubyforge.org/search/?type_of_search=soft&words=csv&Search=Suche">search</a> on rubyforge&nbsp;</li>
-                                        <li><a href="http://raa.ruby-lang.org/search.rhtml?search=csv">search</a> on raa.ruby-lang.org&nbsp;</li>
-				</ul>
-			</div>
+  
+  <div id="linkList">
+    <div id="linkList2">
+      <div id="lselect">
+        <h3 class="select"><span>Documentation</span></h3>
+          <ul>
+            <li><a href="http://extcsv.rubyforge.org/rdoc/index.html">extcvs</a>rdoc&nbsp;</li>
+            <li><a href="http://extcsv.rubyforge.org/svn">subversion tree</a>&nbsp;</li>
+          </ul>
+        <h3 class="select"><span>Select a related project</span></h3>
+        <ul>
+          <li><a href="http://extcsv.rubyforge.org/correlation">correlation</a> by <a href="http://rubyforge.org/users/lem/" class="c">Ralf M&uuml;ller</a>&nbsp;</li>
+          <li><a href="http://extcsv.rubyforge.org/spectralfilter">spectralfilter</a> by <a href="http://rubyforge.org/users/lem/" class="c">Ralf M&uuml;ller</a>&nbsp;</li>
+          <li><a href="http://rb-gsl.rubyforge.org">rb-gsl</a> by Yoshiki Tsunesada&nbsp;</li>
+          <li><a href="http://rubyforge.org/search/?type_of_search=soft&words=csv&Search=Suche">search</a> on rubyforge&nbsp;</li>
+          <li><a href="http://raa.ruby-lang.org/search.rhtml?search=csv">search</a> on raa.ruby-lang.org&nbsp;</li>
+        </ul>
+        <h3 class="select"><span>My other projects</span></h3>
+        <ul>
+          <li><a href="http://codegraph.rubyforge.org">codegraph</a>Source code analysis&nbsp;</li>
+          <!-- <li><object width="425" height="344"><param name="movie" value="http://www.youtube.com/v/ko5CCSomDMY&hl=de&fs=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/ko5CCSomDMY&hl=de&fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="185" height="148"></embed></object>&nbsp;</li>-->
+        </ul>
+      </div>
                         <!--
-			<div id="larchives">
-				<h3 class="archives"><span>Archives:</span></h3>
-				<ul>
-					<li><a href="/" title="View next set of designs. AccessKey: n" accesskey="n"><span class="accesskey">n</span>ext designs &raquo;</a>&nbsp;</li>
-					<li><a href="/" title="View previous set of designs. AccessKey: p" accesskey="p">&laquo; <span class="accesskey">p</span>revious designs</a></li>
-					<li><a href="http://www.mezzoblue.com/zengarden/alldesigns/" title="View every submission to the Zen Garden. AccessKey: w" accesskey="w">Vie<span class="accesskey">w</span> All Designs</a></li>
-				</ul>
-			</div>
-			
-			<div id="lresources">
-				<h3 class="resources"><span>Resources:</span></h3>
-				<ul>
-					<li><a href="http://www.csszengarden.com/001/001.css" title="View the source CSS file for the currently-viewed design, AccessKey: v" accesskey="v"><span class="accesskey">V</span>iew This Design&#8217;s <acronym title="Cascading Style Sheets">CSS</acronym></a></li>
-					<li><a href="http://www.mezzoblue.com/zengarden/resources/" title="Links to great sites with information on using CSS. AccessKey: r" accesskey="r"><acronym title="Cascading Style Sheets">CSS</acronym> <span class="accesskey">R</span>esources</a></li>
-					<li><a href="http://www.mezzoblue.com/zengarden/faq/" title="A list of Frequently Asked Questions about the Zen Garden. AccessKey: q" accesskey="q"><acronym title="Frequently Asked Questions">FA<span class="accesskey">Q</span></acronym></a>&nbsp;</li>
-					<li><a href="http://www.mezzoblue.com/zengarden/submit/" title="Send in your own CSS file. AccessKey: s" accesskey="s"><span class="accesskey">S</span>ubmit a Design</a></li>
-					<li><a href="http://www.mezzoblue.com/zengarden/translations/" title="View translated versions of this page. AccessKey: t" accesskey="t"><span class="accesskey">T</span>ranslations</a></li>
-				</ul>
-			</div>
+      <div id="larchives">
+        <h3 class="archives"><span>Archives:</span></h3>
+        <ul>
+          <li></li>
+        </ul>
+      </div>
+      
+      <div id="lresources">
+        <h3 class="resources"><span>Resources:</span></h3>
+        <ul>
+          <li></li>
+        </ul>
+      </div>
                         -->
                       </div>
-	</div>
+  </div>
 
 
 </div>
