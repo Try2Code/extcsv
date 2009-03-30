@@ -19,6 +19,10 @@ end
 #
 # Have a look at my other projects for
 # correlation[http://extcsv.rubyforge.org/correlation] and {spectral filtering}[http://extcsv.rubyforge.org/spectralfilter].
+#
+# ==== Author: Ralf Müller
+# ==== License: BSD - see {license file}[http:/extcsv.rubyforge.org/svn/extcsv/trunk/LICENSE]
+################################################################################
 class ExtCsv < OpenStruct
   VERSION = '0.10.0'
 
