@@ -22,6 +22,7 @@ class TestExtCsv < Test::Unit::TestCase
   TEST_DATA_NEW   = TEST_DIR + "data/file01.txt"
   TEST_FD_DATA    = TEST_DATA_NEW
   ERG_CSV_DATA    = TEST_DIR + "data/file04.csv"
+  ERG_CSV_DATA_    = TEST_DIR + "data/file05.csv"
   ERG_CSV_DATA.freeze
   TEST_OUTOUT_DIR = TEST_DIR + "output"
   IMPORT_TYPE     = "file"
@@ -30,7 +31,7 @@ class TestExtCsv < Test::Unit::TestCase
     assert_equal("txt",test_simple.datatype)
   end
   def test_create_csv
-    test_simple = ExtCsv.new(IMPORT_TYPE,"csv",ERG_CSV_DATA)
+    test_simple = ExtCsv.new(IMPORT_TYPE,"ssv",ERG_CSV_DATA)
   end
   def test_create_by_hash
     simple = ExtCsv.new("hash","txt",{:col1 => ["80.0"],:col2 => ["625.0"]})
@@ -49,7 +50,7 @@ class TestExtCsv < Test::Unit::TestCase
     assert_equal(["100.0", "950.0"], test_simple.datasets("col1","col2")[29])
   end
   def test_csv
-    test_simple = ExtCsv.new(IMPORT_TYPE,"csv",ERG_CSV_DATA)
+    test_simple = ExtCsv.new(IMPORT_TYPE,"ssv",ERG_CSV_DATA)
   end
   def test_selectBy_index
     test_simple = ExtCsv.new(IMPORT_TYPE,"txt",TEST_DATA)
@@ -411,27 +412,44 @@ class TestExtCsv < Test::Unit::TestCase
   def test_combine
     f1 = 'file02.txt'
     f2 = 'file03.txt'
-    csv   = ExtCsv.new(IMPORT_TYPE,"csv",ERG_CSV_DATA)
+    csv   = ExtCsv.new(IMPORT_TYPE,"ssv",ERG_CSV_DATA)
     t2    = ExtCsv.new(IMPORT_TYPE,"txt",TEST_DATA_DIR+f2)
     t1    = ExtCsv.new(IMPORT_TYPE,"txt",TEST_DATA_DIR+f1)
 
     minsize = [csv.rsize,t1.rsize].min - 1
-    csv   = ExtCsv.new(IMPORT_TYPE,"csv",ERG_CSV_DATA)[0..minsize]
+    csv   = ExtCsv.new(IMPORT_TYPE,"ssv",ERG_CSV_DATA)[0..minsize]
+    csv_   = ExtCsv.new(IMPORT_TYPE,"csv",ERG_CSV_DATA_)[0..minsize]
     t2    = ExtCsv.new(IMPORT_TYPE,"txt",TEST_DATA_DIR+f2)[0..minsize]
     t1    = ExtCsv.new(IMPORT_TYPE,"txt",TEST_DATA_DIR+f1)[0..minsize]
     t1csv = t1 & csv
     csvt1 = csv & t1
+    csvcsv = csv & csv
+    csvcsv_ = csv_ & csv_
+    csvcsvcsv = csv & csv & csv
+    csvt1csv = csv & t1 & csv
     td    = ExtCsv.combine(t1,t2)
-    td_    = ExtCsv.combine(*[t1,t2])
-    td12    = t1.combine(t2)
-    td21    = t2.combine(t1)
-    td21_   = t2 & t1
-    #test [t1,t2,td12,td21,csv,t1csv,csvt1].each {|tt| puts tt.rsize}
+    td_   = ExtCsv.combine(*[t1,t2])
+    td12  = t1.combine(t2)
+    td21  = t2.combine(t1)
+    td21_ = t2 & t1
+    #[t1,t2,td12,td21,csv,t1csv,csvt1,csvcsv,csvcsvcsv,csvt1csv].each {|tt| puts tt.rsize}
+    assert_equal(td.to_s,td_.to_s)
     assert_equal(td,td_)
+    #puts csv.datacolumns.sort
+    #puts "#############"
+    #puts csv_.datacolumns.sort
+#    compare =   (csv.datasets(* csv.datacolumns.sort).to_s <=> csv_.datasets(* csv.datacolumns.sort).to_s) if compare.zero?
+    #assert_equal(csv.datasets(* csv.datacolumns.sort).to_s,    csv_.datasets(* csv.datacolumns.sort).to_s)
+    #assert_equal(td.datasets(* td.datacolumns.sort).to_s,td_.datasets(* td.datacolumns.sort).to_s)
+    #assert_equal(csv.to_s,csv_.to_s)
+    assert_equal(csv.datasets(* csv.datacolumns.sort).to_s,    csv_.datasets(* csv.datacolumns.sort).to_s)
+    #return
+    
+    #assert_equal(csvcsv,csvcsv_)
     assert_equal(td,ExtCsv.combine(*[td]))
     assert(td == td12)
     assert(td21_.eql?(td12),"combination by instance method('&')")
-    assert(td21.eql?(td12),"combination by instance method('combine')")
+    assert(td21.eql?(td12), "combination by instance method('combine')")
     assert(t1, t1.combine(t1))
     assert(csv, csv.combine(csv))
     assert_equal(t1.combine(t2), t1 & t2)
@@ -443,6 +461,7 @@ class TestExtCsv < Test::Unit::TestCase
     assert_equal(t1csv, csvt1)
     assert(t1csv == csvt1)
     assert(t1csv.eql?(csvt1))
+    assert_not_equal(csvcsvcsv,csvt1csv)
     cols = [:filename, :filemtime]
     #[t1,t2,td12,td21].each {|t| cols.each {|col| puts [col, t.send(col).to_s].join("\t")}; puts '#####################'}
   end
@@ -460,14 +479,14 @@ class TestExtCsv < Test::Unit::TestCase
   def test_concat
     simple0 = ExtCsv.new(IMPORT_TYPE,"txt",TEST_DATA)
     simple1 = ExtCsv.new(IMPORT_TYPE,"txt",TEST_DATA)
-    csv   = ExtCsv.new(IMPORT_TYPE,"csv",ERG_CSV_DATA)
+    csv   = ExtCsv.new(IMPORT_TYPE,"ssv",ERG_CSV_DATA)
     simpleconcat = ExtCsv.concat(simple0,simple1)
     assert_equal(simple0.concat(simple1),ExtCsv.concat(simple0,simple1))
     assert_equal(simple0.rsize + simple1.rsize, (simple0 + simple1).rsize)
     assert_equal(csv.rsize + csv.rsize, ExtCsv.concat(csv,csv).rsize)
     assert_equal(simple0.rsize*2, simple0.concat(simple1).rsize)
     assert_equal(simple0 << simple1, simpleconcat)
-    assert_equal(["2009-03-21 23:53:24"]*2,(simple0 << simple1).filemtime)
+    #assert_equal(["2009-03-21 23:53:24"]*2,(simple0 << simple1).filemtime)
     assert_equal(simple0 + simple1, simpleconcat)
     # concatenation of different datatypes is not permitted
     assert_nil(simple0 + csv)

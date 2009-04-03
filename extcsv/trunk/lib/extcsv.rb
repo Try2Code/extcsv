@@ -30,7 +30,7 @@ class ExtCsv < OpenStruct
   include Enumerable
 
   # Allowed data types
-  TYPES = %w{csv tsv psv txt plain}
+  TYPES = %w{csv ssv tsv psv txt plain}
 
   # Allowed input modes, db and url are not supported, yet
   MODES = %w{file hash array string}
@@ -97,7 +97,8 @@ class ExtCsv < OpenStruct
   def set_separators(obj_hash)
     obj_hash[:cellsep]  = case obj_hash[:datatype]
                           when "txt","tsv": "\t"
-                          when "csv":       ';'
+                          when "ssv":       ';'
+                          when "csv":       ','
                           when "psv":       "|"
                           end
     obj_hash[:rowsep]   = "\r\n"
@@ -117,11 +118,12 @@ class ExtCsv < OpenStruct
   # * '+' and '-' are changed into the correspondig words
   # * empty lines are removed
   # * dots are changed into underscores for columns names
+  # * commas are converteed into dots (german number notation) unless the commy is the cell separator
   # * the greek sign µ is changes into mu
   def parse_content(filecontent,obj_hash)
     content     = []
-    # special treatement of emission/bloostblank data switch decimal sign
-    filecontent = filecontent.gsub(',','.')
+    # convert numbers into us. notation if this doesn't crashes with the columns separator
+    filecontent = filecontent.gsub(',','.') unless obj_hash[:datatype] == "csv"
     # remove blank lines
     filecontent = filecontent.gsub(/\r\r/,"\r").gsub(/(\r\n){2,}/,"\r\n").gsub(/\n{2,}/,"\n")
     csv         = CSV::StringReader.parse(filecontent, obj_hash[:cellsep])#, obj_hash[:rowsep])
@@ -560,7 +562,7 @@ class ExtCsv < OpenStruct
                          self.datatype == other.datatype or self.datatype  == other.datatype
                         )
 
-    omitted = %w|bfe_vers version zeit time|
+    omitted = %w|version zeit time|
     return false unless self.datacolumns == other.datacolumns
 
     # split between textual and numeric values
@@ -582,14 +584,17 @@ class ExtCsv < OpenStruct
 
   def <=>(other)
     compare = (self.size <=> other.size)
-    #test $stdout << compare.to_s << "\n"
+    #$stdout << compare.to_s << "\n"
     compare = (datacolumns.size <=> other.datacolumns.size) if compare.zero?
-    #test $stdout << compare.to_s << "\n" if compare.zero?
+    #$stdout << compare.to_s << "\n"# if compare.zero?
+    #compare = (self.datasets(* self.datacolumns.sort) <=> other.datasets(* other.dataacolumns.sort)) if compare.zero?
+    #$stdout << compare.to_s << "\n"# if compare.zero?
     compare = (to_s.size <=> other.to_s.size) if compare.zero?
-    #test $stdout << compare.to_s << "\n" if compare.zero?
+    #
+    #$stdout << compare.to_s << "\n" if compare.zero?
     compare = (to_s <=> other.to_s) if compare.zero?
-    #test $stdout << compare.to_s << "\n" if compare.zero?
-    #test $stdout << "##################################\n"
+    #$stdout << compare.to_s << "\n" if compare.zero?
+    #$stdout << "##################################\n"
     compare
   end
   
@@ -624,8 +629,8 @@ class ExtCsv < OpenStruct
     when 1
       hash = marshal_dump.merge(other.marshal_dump)
     else
-      if datatypes.include?("csv")
-        csv_index  = datatypes.index("csv")
+      if datatypes.include?("ssv") or datatypes.include?("csv")
+        csv_index  = datatypes.index("ssv") || datatypes.index("csv")
         qpol_index = csv_index - 1
         objects[csv_index].modyfy_time_column
         hash = objects[csv_index].marshal_dump.merge(objects[qpol_index].marshal_dump)
