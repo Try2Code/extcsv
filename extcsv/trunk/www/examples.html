@@ -52,22 +52,24 @@ Step	col1	col2	col3	col5	col6	col7	col8
       i.e. which kind of file should be loaded. 'txt' or 'tsv' expects a
       tab-separated file, 'csv' reads ;-separated files (like the .csv files
       from MSExcel) and 'psv' uses a pipe-symbol (&#124).  </span></p>
-
-        <p class="p2"><span>Different file types: <code> ExtCsv.new("file","txt","file.txt")</code></span></p>
     </div>
     <div id="explanation">
       <h3><span>Example 1: selections</span></h3>
-        <p class="p1"><span></span></p>
-        <p class="p2"><span></span></p>
+      <p class="p1"><span>Take the object from the first example, you can use <code>obj.col2</code> the access the second column the the data file.</span></p>
+      <p class="p2"><span> If you're interessted in all datasets with value
+      <code>150</code> in the third column, simply use
+      </code><pre>obj.selectBy(:col2 => 150)</pre></code> or for datasets with
+      values larger than 150 on columns 3:<code><pre>obj.selectBy(:col2 => '> 150')</pre></code></span>
+      <p class="p2"><span> Multiple selections are possible:<pre><code>obj.selectBy(:col2 => '> 150').selectBy(:col5 => '> 250.3')</code> or</pre> <code><pre>obj.selectBy(:col2 => '> 150',:col5 => '> 250.3')</pre></code></span></p></span>
     </div>
     <div id="explanation">
       <h3><span>Example 2: selections using Array methods</span></h3>
-        <p class="p1"><span></span></p>
+      <p class="p1"><span>To access the first 10 datasets, it is possible to use <code>obj[0,10]</code>, <code>obj.slice(0,10)</code> or <code>obj[0..9]</code> or whatever you find <a href="http://www.ruby-doc.org/core/classes/Array.html#M002183">here</a></span></p>
         <p class="p2"><span></span></p>
     </div>
     <div id="explanation">
       <h3><span>Example 3: iterators</span></h3>
-        <p class="p1"><span></span></p>
+      <p class="p1"><span>The <a href="http://extcsv.rubyforge.org/rdoc/classes/ExtCsv.html#M000024">each</a>-method iterates oven the array of sub objects, which contain each single dataset. This is similar the the <a href="http://extcsv.rubyforge.org/rdoc/classes/ExtCsv.html#M000010">datasets</a>-methods, which returns an array of arrays where each array contains one single datasets.</span></p>
         <p class="p2"><span></span></p>
     </div>
     <div id="explanation">
