@@ -24,7 +24,7 @@ end
 # ==== License: BSD - see {license file}[http:/extcsv.rubyforge.org/svn/extcsv/trunk/LICENSE]
 ################################################################################
 class ExtCsv < OpenStruct
-  VERSION = '0.10.0'
+  VERSION = '0.10.1'
 
   include Comparable
   include Enumerable
@@ -135,11 +135,11 @@ class ExtCsv < OpenStruct
 
     header.each_with_index {|key,i|
       key = "test" if key.nil?
-      header[i] = key.downcase.tr(' ','').tr('"','').tr('Ü',"ue").tr('ä',"ae")\
-        .tr('ö',"oe").gsub(/\[\w*\]/,"")\
-        .tr('ü',"ue").gsub(/^\+/,"plus_")\
-        .gsub('µm','mu')\
-        .gsub(/^-/,"minus_").tr('-','_').tr('+','_').gsub(/(\(|\))/,'_').tr('.','_').chomp
+      header[i] = key.downcase.tr(' ','').tr('"','')\
+        .gsub(/\[\w*\]/,"")\
+        .gsub(/^\+/,"plus_").gsub(/^-/,"minus_")\
+        .tr('-','_').tr('+','_')\
+        .gsub(/(\(|\))/,'_').tr('.','_').chomp
     }
     content << header
     # read the data itself
@@ -360,7 +360,11 @@ class ExtCsv < OpenStruct
   # columns in order of these columns, e.g.
   # [[col0_val0,col1_val0,...],...,[col0_valN, col1_valN,...]]
   def datasets(*columns)
-    retval = []
+    retval = [] 
+
+    # preset the selected columns to select
+    columns = datacolumns if columns.empty?
+
     columns.each {|col| retval << @table[col.to_sym]}
     retval.transpose
   end
@@ -553,32 +557,15 @@ class ExtCsv < OpenStruct
     end
   end
   
-  # Equality if the datacolumns have the save values,i.e. as float for numeric
+  # Equality if the datacolumns have the save values, i.e. as float for numeric
   # data and as strings otherwise
-  # the time-column is exceptional, because the e.g. the seconds could be left
-  # out when file is saved with MSExcel
   def eql?(other)
-    return false unless ( 
-                         self.datatype == other.datatype or self.datatype  == other.datatype
-                        )
+    return false unless ( self.datatype == other.datatype or self.datatype  == other.datatype)
 
-    omitted = %w|version zeit time|
-    return false unless self.datacolumns == other.datacolumns
+    return false unless self.datacolumns.sort == other.datacolumns.sort
 
-    # split between textual and numeric values
-    text_columns = %w|anlage kommentar dateiname| & self.datacolumns
-    num_columns  = self.datacolumns - text_columns - omitted
-    text_columns.each {|c| return false if send(c) !=  other.send(c)}
-    num_columns.each  {|c| 
-      a_ = send(c)
-      a__ = a_.collect {|v| v.to_f}
-      b_ = other.send(c)
-      b__ = b_.collect {|v| v.to_f}
-     #$stdout << c << "\n" << filename << "\n";
-     #$stdout << c << "\n" << other.filename << "\n";
-      return false  if (b__ != a__)
-      #if (send(c).collect {|v| v.to_f} != other.send(c).collect {|v| v.to_f})}
-    }
+    datacolumns.each {|c| puts c + " " + (send(c) == other.send(c)).to_s   + send(c).join(" ")}#return false unless send(c) == other.send(c)}
+    
     return true
   end
 
