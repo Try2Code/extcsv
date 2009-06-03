@@ -61,7 +61,7 @@ end
 
 # ====================================================================
 desc "Build package for further developement"
-task :build_dev do
+task :build_dev do 
   files = SPEC.files + Dir.glob("test/data/*")
 #require 'pp';  pp files;end
   com = "tar czf pkg/#{SPEC.name}-#{SPEC.version}-src.tgz #{files.join(" ")}"
@@ -69,12 +69,12 @@ task :build_dev do
 end
 # ====================================================================
 desc "Install the Library with docs"
-task :install do
+task :install => [:repackage] do 
   command = "gem install pkg/#{SPEC.name}-#{SPEC.version}.gem"
   puts command
   system(command)
 end
-task :smallInstall do 
+task :smallInstall => [:repackage] do 
   command = "gem install pkg/#{SPEC.name}-#{SPEC.version}.gem --no-ri --no-rdoc"
   puts command
   system(command)

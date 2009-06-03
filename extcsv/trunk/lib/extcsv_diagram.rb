@@ -2,6 +2,8 @@ require 'rubygems'
 require 'gnuplot'
 require 'win32ole' if RUBY_PLATFORM =~ /(win32|cygwin)/i
 require 'extcsv_units'
+
+# This module provides separate plotting methods 
 module ExtCsvDiagram
   include ExtCsvUnits
   GRAPH_OPTIONS = {
@@ -62,16 +64,17 @@ module ExtCsvDiagram
 
     }
   end
-            def ExtCsvDiagram.enhanceTitleByGroup(group_by,ob)
-              title = ''
-              group_by.each {|col|
-                colunit = Units[col.to_sym].nil? ? col.to_s : "[#{Units[col.to_sym]}]"
-                name = [ob.send(col)[0],colunit]
-                title += (col.to_sym == :focus) ? name.reverse.join('') : name.join('')
-                title += " " unless col == group_by.last
-              }
-              title
-            end
+  
+  def ExtCsvDiagram.enhanceTitleByGroup(group_by,ob)
+    title = ''
+    group_by.each {|col|
+      colunit = Units[col.to_sym].nil? ? col.to_s : "[#{Units[col.to_sym]}]"
+      name = [ob.send(col)[0],colunit]
+      title += (col.to_sym == :focus) ? name.reverse.join('') : name.join('')
+      title += " " unless col == group_by.last
+    }
+    title
+  end
 
   def ExtCsvDiagram.plot(obj,
            group_by, # array[col0, ..., colN]
