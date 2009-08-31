@@ -1,6 +1,6 @@
 require 'rubygems'
-require 'tube_data'
-require 'tube_data_diagram'
+require 'extcsv'
+require 'extcsv_diagram'
 require 'gsl'
 require 'ostruct'
 require 'arraylinspace'
@@ -116,12 +116,12 @@ module Convolution
 end
 module CPlot
   def plot_kernel(g)
-    td = TubeData.new("hash","plain",{:x => g.x,:w => g.w})
-    TubeDiagram.plot(td,[],:x,[:w])
+    td = ExtCsv.new("hash","plain",{:x => g.x,:w => g.w})
+    ExtCsv.plot(td,[],:x,[:w])
   end
   def plot(f)
-    td = TubeData.new("hash","plain",{c0.to_sym => f.send(c0),c1.to_sym => f.send(c1)})
-    TubeDiagram.plot(td,[],:x,[:y],'',[],'',:linewidth => 1)#,:xrange => '[50:150]')
+    td = ExtCsv.new("hash","plain",{c0.to_sym => f.send(c0),c1.to_sym => f.send(c1)})
+    ExtCsv.plot(td,[],:x,[:y],'',[],'',:linewidth => 1)#,:xrange => '[50:150]')
   end
   def CPlot.gplot(*datasets)
     require 'gnuplot'
