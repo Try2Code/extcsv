@@ -70,7 +70,7 @@ module ExtCsvDiagram
     group_by.each {|col|
       colunit = Units[col.to_sym].nil? ? col.to_s : "[#{Units[col.to_sym]}]"
       name = [ob.send(col)[0],colunit]
-      title += (col.to_sym == :focus) ? name.reverse.join('') : name.join('')
+      title += (col.to_sym == :focus) ? name.reverse.join('') : name[0]
       title += " " unless col == group_by.last
     }
     title
@@ -140,7 +140,7 @@ module ExtCsvDiagram
               unit = Units[y_col.to_sym].nil? ? '' : "[#{Units[y_col.to_sym]}]"
               ds.using = @@timeColumns.include?(x1_col.to_s) ? '1:3' : '1:2'
               ds.with  = options[:type] + " axes x1y1 lw #{options[:linewidth]}"
-              ds.title = "#{y_col} #{unit}, #{title}"
+              ds.title =  options[:onlyGroupTitle] ? "#{title}" : "#{y_col} #{unit}, #{title}"
             }
 
             # set labels if requested
