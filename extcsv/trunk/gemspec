@@ -2,7 +2,8 @@ require 'rubygems'
 
 spec = Gem::Specification.new do |s|
   s.name              = "extcsv"
-  s.version           = "0.10.1"
+  s.version           = "0.11.0"
+  s.date              = %q{2010-06-04}
   s.author            = "Ralf Mueller"
   s.email             = "stark.dreamdetective@gmail.com"
   s.homepage          = "http://extcsv.rubyforge.org"
@@ -10,11 +11,8 @@ spec = Gem::Specification.new do |s|
   s.platform          = Gem::Platform::RUBY
   s.summary           = "Let CSV-like files behave like DB-tables: selection, data operations on columns. \n" +
                         "Easy plotting with gnuplot and modelling"
-  candidates        = Dir.glob("lib/*.rb") + ["rakefile","gemspec","LICENSE"]
-  s.files             = candidates.delete_if do |item|
-                          item.include?("www") || item.include?("pkg") || item.include?("rdoc") || item.include?("extcsv_diagram.rb") || item.include?("extcsv_units.rb")
-                        end
-  s.test_files        = (Dir.glob("test/test_*.rb") + Dir.glob("test/data/*.{csv,txt}")).delete_if  {|item| item.include?("test_extcsv_diagram.rb")}
+  s.files             = Dir.glob("lib/*.rb") + ["rakefile","gemspec","LICENSE"] 
+  s.test_files        = Dir.glob("test/test_*.rb") + Dir.glob("test/data/*.{csv,txt}")
   s.has_rdoc          = true
 end
 
