@@ -15,6 +15,8 @@ def filename_to_sym(filename)
 end
 
 # ====================================================================
+task :default => []
+# ====================================================================
 # TEST TASKS
 test_tasks = {
   :test_all   => ["Run all tests"],
@@ -90,6 +92,7 @@ task :tags do
   com = "rtags --vi -f tags lib/*.rb"
   system(com)
 end
+
 #
 #
 # vim:ft=ruby
