@@ -1,4 +1,4 @@
-require "rbgsl"
+require "gsl"
 
 # This Extension of the GNU Scientific Library bindings by Yoshiki Tsunesada
 # (http://rb-gsl.rubyforge.org) provides the computation of the correlation of two
@@ -19,8 +19,7 @@ class GSL::Vector
     end
 
     # predefine result vector
-    correlation = GSL::Vector.alloc(1)
-    correlation.shift
+    correlation = GSL::Vector.alloc(2*size+1)
 
     # Alternate definition, which is actually the opposite direction of the definition
     # (0...size).each {|i|
@@ -29,12 +28,11 @@ class GSL::Vector
     # (1...size).each {|i|
     #   correlation << self[i..size-1]*other[0...size-i].col
     # }
-
     (0...size).each {|i|
-      correlation << self[-i-1..-1]*other[0..i].col
+      correlation[0] = (self.to_a[-i-1..-1].to_gv)*(other.to_a[0..i].to_gv.col)
     }
     (1...size).each {|i|
-      correlation << self[0...size-i]*other[i..size-1].col
+      correlation[size+i] = (self.to_a[0...size-i].to_gv)*(other.to_a[i..size-1].to_gv.col)
     }
 
     [GSL::Vector.linspace(-size+1, size-1, 2*size-1) , correlation]
