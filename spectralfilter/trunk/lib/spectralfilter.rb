@@ -1,4 +1,4 @@
-require 'rbgsl'
+require 'gsl'
 require 'mathn'
 
 # = Spectral analysis and filtering
@@ -16,19 +16,19 @@ class SpectralFilter
 
   # Frequences larger than freq are omitted
   def lowpass(freq)
-    n=@y.size
+    n = @y.size
     (0...n).each {|i| @fft[i] = 0 if i*(0.5/(n*(@x[1]-@x[0]))) > freq}
   end
 
   # Frequences smaller than freq are omitted
   def highpass(freq)
-    n=@y.size
+    n = @y.size
     (0...n).each {|i| @fft[i] = 0 if i*(0.5/(n*(@x[1]-@x[0]))) < freq}
   end
 
   # Frequences outside the range between freqMin and freqMax are subpressed
   def bandpass(freqMin,freqMax)
-    n=@y.size
+    n = @y.size
     (0...n).each {|i| 
       freq_   = i*(0.5/(n*(@x[1]-@x[0])))
       @fft[i] = 0 if (freq_ < freqMin or freq_ > freqMax)
@@ -37,7 +37,7 @@ class SpectralFilter
 
   # Frequences in the range between freqMin and freqMax are omitted
   def bandblock(freqMin,freqMax)
-    n=@y.size
+    n = @y.size
     (0...n).each {|i| 
       freq_   = i*(0.5/(n*(@x[1]-@x[0])))
       @fft[i] = 0 if !(freq_ < freqMin or freq_ > freqMax)

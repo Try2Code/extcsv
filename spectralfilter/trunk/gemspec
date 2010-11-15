@@ -3,10 +3,12 @@ require 'rubygems'
 spec = Gem::Specification.new do |s|
   s.name         = "spectralfilter"
   s.version      = "0.0.1"
-  s.author       = "Ralf Müller"
+  s.date         = Time.new.to_s
+  s.author       = "Ralf Mueller"
   s.email        = "stark.dreamdetective@gmail.com"
-  s.homepage     = "http://rubyforge.org/projects/extcsv"
+  s.homepage     = "http://rubyforge.org/projects/spectralfilter"
   s.platform     = Gem::Platform::RUBY
+  s.add_dependency('gsl')
   s.summary      = "Filtering Datasets via Highpass, Lowpass, Bandpass or Bandblock"
   candidates     = Dir.glob("lib/*.rb") + [ "rakefile", "gemspec","LICENSE"]
   s.files        = candidates.delete_if do |item|
