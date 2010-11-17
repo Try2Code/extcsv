@@ -19,7 +19,7 @@ class GSL::Vector
     end
 
     # predefine result vector
-    correlation = GSL::Vector.alloc(2*size+1)
+    correlation = GSL::Vector.alloc(2*size)
 
     # Alternate definition, which is actually the opposite direction of the definition
     # (0...size).each {|i|
@@ -34,7 +34,6 @@ class GSL::Vector
     (1...size).each {|i|
       correlation[size+i] = (self.to_a[0...size-i].to_gv)*(other.to_a[i..size-1].to_gv.col)
     }
-
     [GSL::Vector.linspace(-size+1, size-1, 2*size-1) , correlation]
   end
   def autocorrelation
