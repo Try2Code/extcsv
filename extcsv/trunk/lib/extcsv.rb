@@ -7,6 +7,12 @@ class Nil
   def empty?; true; end
 end
 
+class Array
+  def complement(other)
+    (self - other) + (other - self)
+  end
+end
+
 # = CSV-like Data processing made easy
 # (see project page: http://rubyforge.org/projects/extcsv)
 #
@@ -23,7 +29,7 @@ end
 # ==== License: BSD - see {license file}[http:/extcsv.rubyforge.org/svn/extcsv/trunk/LICENSE]
 ################################################################################
 class ExtCsv < OpenStruct
-  VERSION = '0.10.1'
+  VERSION = '0.11.0'
 
   include Comparable
   include Enumerable
@@ -95,10 +101,10 @@ class ExtCsv < OpenStruct
   
   def set_separators(obj_hash)
     obj_hash[:cellsep]  = case obj_hash[:datatype]
-                          when "txt","tsv": "\t"
-                          when "ssv":       ';'
-                          when "csv":       ','
-                          when "psv":       "|"
+                          when "txt","tsv" then "\t"
+                          when "ssv"       then ';'
+                          when "csv"       then ','
+                          when "psv"       then "|"
                           end
     obj_hash[:rowsep]   = "\r\n"
   end
@@ -125,7 +131,7 @@ class ExtCsv < OpenStruct
     filecontent = filecontent.gsub(',','.') unless obj_hash[:datatype] == "csv"
     # remove blank lines
     filecontent = filecontent.gsub(/\r\r/,"\r").gsub(/(\r\n){2,}/,"\r\n").gsub(/\n{2,}/,"\n")
-    csv         = CSV::StringReader.parse(filecontent, obj_hash[:cellsep])#, obj_hash[:rowsep])
+    csv         = CSV.parse(filecontent, :col_sep => obj_hash[:cellsep])#, obj_hash[:rowsep])
     
     # read @datatype specific header
     header = csv.shift
@@ -142,11 +148,11 @@ class ExtCsv < OpenStruct
     }
     content << header
     # read the data itself
-    csv.each {|row| content << row if row.to_a.nitems > 0 }
+    csv.each {|row| content << row if row.to_a.delete_if(&:nil?).size != 0 }
 
     # further processing according to the input type
     case obj_hash[:datatype]
-    when "csv"
+    when "csv","ssv","psv","txt","tsv"
       # check if rows have the same lenght
       contents_size = content.collect {|row| row.size}
       content.each_with_index {|row,i|
@@ -230,7 +236,7 @@ class ExtCsv < OpenStruct
     # ATTENTION: DO NOT MIX THE USAGE OF STRING AND SYMBOLS!
     #   This can lead to a data loss, because e.g. {:k => 4, "k" => 3} will be
     #   transformed into {:k=>3}
-    selection.each_key {|k| 
+    selection.keys {|k| 
       if k.kind_of?(String)
         v                   = selection.delete(k)
         selection[k.to_sym] = v
@@ -241,7 +247,7 @@ class ExtCsv < OpenStruct
     vars.each {|attribute|
       unless @table.has_key?(attribute)
         $stdout << "Object does NOT hav the attribute '#{attribute}'!"
-        raise
+        raise 
       end
     }
     # default is the lookup in the whole array of values for each var
@@ -304,6 +310,7 @@ class ExtCsv < OpenStruct
         lookup = lookup & obj_values.find_all {|i,v| operation.match(v.to_s)}.transpose[0].to_a
       else
         lookup = lookup & obj_values.find_all {|i,v| 
+          next if v.nil? or v.empty?
           v = "'" + v + "'" if type == :string
           #test $stdout <<[v,operation,value].join(" ") << "\n"
           eval([v,operation,value].join(" "))
@@ -366,6 +373,11 @@ class ExtCsv < OpenStruct
 
     columns.each {|col| retval << @table[col.to_sym]}
     retval.transpose
+  end
+  def columns(*columns)
+    h = {}
+    columns.each{|col| h[col] = self.send(col)}
+    return self.class.new("hash","plain",h)
   end
   def clear
     @table.each {|k,v| @table[k] = [] if v.kind_of?(Array)} 
@@ -458,6 +470,7 @@ class ExtCsv < OpenStruct
   # each_obj iterates over the subobject of the receiver, which belong to the
   # certain value of key
   def each_obj(key, &block)
+    key = key.to_sym
     retval = []
     send(key).sort.uniq.each {|value|
       retval << selectBy(key => value)
@@ -544,10 +557,11 @@ class ExtCsv < OpenStruct
   end
   
   # String output. See ExtCsvExporter.to_string
-  def to_string(stype)
+  def to_string(stype,sort=true)
+    header = sort ? datacolumns.sort : datacolumns
       ExtCsvExporter.new("extcsv",
-                            ([datacolumns.sort] + 
-                               datasets(*datacolumns.sort)).transpose
+                            ([header] + 
+                               datasets(*header)).transpose
                            ).to_string(stype)
   end
   def to_file(filename, filetype="txt")
@@ -563,9 +577,22 @@ class ExtCsv < OpenStruct
 
     return false unless self.datacolumns.sort == other.datacolumns.sort
 
-    datacolumns.each {|c| puts c + " " + (send(c) == other.send(c)).to_s   + send(c).join(" ")}#return false unless send(c) == other.send(c)}
+    datacolumns.each {|c| return false unless send(c) == other.send(c) }
     
     return true
+  end
+
+  def diff(other)
+    diffdatatype = [self.datatype, other.datatype]
+    return diffdatatype unless diffdatatype.uniq.size == 1
+
+    diffdatacolums = self.datacolumns.complement(other.datacolumns)
+    return [self.diffdatacolums,other.datacolumns] unless diffdatacolums.empty?
+    
+    datacolumns.each {|c| 
+      diffcolumn = send(c).complement(other.send(c))
+      return diffcolumn unless diffcolumn.empty?
+    }
   end
 
   def <=>(other)

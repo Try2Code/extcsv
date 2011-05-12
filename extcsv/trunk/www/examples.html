@@ -59,8 +59,8 @@ Step	col1	col2	col3	col5	col6	col7	col8
       <p class="p2"><span> If you're interessted in all datasets with value
       <code>150</code> in the third column, simply use
       </code><pre>obj.selectBy(:col2 => 150)</pre></code> or for datasets with
-      values larger than 150 on columns 3:<code><pre>obj.selectBy(:col2 => '> 150')</pre></code></span>
-      <p class="p2"><span> Multiple selections are possible:<pre><code>obj.selectBy(:col2 => '> 150').selectBy(:col5 => '> 250.3')</code> or</pre> <code><pre>obj.selectBy(:col2 => '> 150',:col5 => '> 250.3')</pre></code></span></p></span>
+      values larger than 150 on column 3:<code><pre>obj.selectBy(:col2 => '> 150')</pre></code></span>
+      <p class="p2"><span> Multiple selections are possible. They act like a logic 'and':<pre><code>obj.selectBy(:col2 => '> 150').selectBy(:col5 => '> 250.3')</code> or</pre> <code><pre>obj.selectBy(:col2 => '> 150',:col5 => '> 250.3')</pre></code></span></p></span>
     </div>
     <div id="explanation">
       <h3><span>Example 2: selections using Array methods</span></h3>
@@ -68,7 +68,12 @@ Step	col1	col2	col3	col5	col6	col7	col8
         <p class="p2"><span></span></p>
     </div>
     <div id="explanation">
-      <h3><span>Example 3: iterators</span></h3>
+      <h3><span>Example 3: selections using Regexp</span></h3>
+      <p class="p1"><span>Regexp can directly be written into the value of the selection hash. A logic 'or' looks like this: <code>obj.selectBy(:col2 => /(1|2)50/)</code> selects datasets with 150 or 250 in the second column.</span></p>
+        <p class="p2"><span></span></p>
+    </div>
+    <div id="explanation">
+      <h3><span>Example 4: iterators</span></h3>
       <p class="p1"><span>The <a href="http://extcsv.rubyforge.org/rdoc/classes/ExtCsv.html#M000024">each</a>-method iterates oven the array of sub objects, which contain each single dataset. This is similar the the <a href="http://extcsv.rubyforge.org/rdoc/classes/ExtCsv.html#M000010">datasets</a>-methods, which returns an array of arrays where each array contains one single datasets.</span></p>
         <p class="p2"><span></span></p>
     </div>

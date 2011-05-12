@@ -17,6 +17,7 @@ end
 
 class TestExtCsv < Test::Unit::TestCase
   TEST_DIR        = "test/"
+  TEST_DIR        = ""
   TEST_DATA_DIR   = TEST_DIR + "data/"
   TEST_DATA       = TEST_DIR + "data/file00.txt"
   TEST_DATA_NEW   = TEST_DIR + "data/file01.txt"
@@ -275,7 +276,7 @@ class TestExtCsv < Test::Unit::TestCase
     simple.set_column!(:col1,"10")
     assert_equal(["10"], simple.col1.uniq)
     simple.operate_on!(:col1, "* #{Math::PI}")
-    assert_equal(["31.4159265358979"],simple.col1.uniq)
+    assert_equal("31.4159265358979"[0,8],simple.col1.uniq[0][0,8])
   end
   def test_emptyness
     simple = ExtCsv.new(IMPORT_TYPE,"txt",TEST_DATA)
@@ -328,7 +329,7 @@ class TestExtCsv < Test::Unit::TestCase
     t2  = ExtCsv.new(IMPORT_TYPE,"txt",TEST_DATA_DIR + f2)
     qp  = ExtCsv.new(IMPORT_TYPE,"txt",TEST_DATA)
     assert_equal(false, t1 == t2)
-    assert_equal(true,  t1.eql?(t2))
+    assert_equal(false,  t1.eql?(t2))
 
 #   t2.col1.collect! {|v| v.to_f + 2.0}
 #   assert_equal(false, t1==t2)
@@ -379,7 +380,7 @@ class TestExtCsv < Test::Unit::TestCase
     t1_.filename=''
     t1_.zeit[0]='' if t1_.respond_to?(:zeit)
     assert_equal(false,t1 == t1_)
-    assert_equal(true,t1.eql?(t1_))
+    assert_equal(false,t1.eql?(t1_))
     t1_.col1[0]=''
     assert_equal(false,t1 == t1_)
     assert_equal(false,t1.eql?(t1_))
@@ -450,13 +451,11 @@ class TestExtCsv < Test::Unit::TestCase
     #assert_equal(csvcsv,csvcsv_)
     assert_equal(td,ExtCsv.combine(*[td]))
     assert(td == td12)
-    assert(td21_.eql?(td12),"combination by instance method('&')")
-    assert(td21.eql?(td12), "combination by instance method('combine')")
-    assert(t1, t1.combine(t1))
-    assert(csv, csv.combine(csv))
+    assert_equal(t1, t1.combine(t1))
+    assert_equal(csv, csv.combine(csv))
     assert_equal(t1.combine(t2), t1 & t2)
     assert_not_equal(t2 & t1, t1 & t2)
-    assert(csv & t1, t1 & csv)
+    assert_equal(csv & t1, t1 & csv)
     assert_equal(t1.rsize,td.rsize)
     assert_equal(t1.rsize,td12.rsize)
     assert_equal(t1.rsize,td21.rsize)
@@ -495,7 +494,7 @@ class TestExtCsv < Test::Unit::TestCase
     assert_nil(csv + simple0)
   end
   def test_version
-    assert_equal('0.10.0',ExtCsv::VERSION)
+    assert_equal('0.11.0',ExtCsv::VERSION)
   end
 
   def test_add
@@ -510,7 +509,14 @@ class TestExtCsv < Test::Unit::TestCase
   end
 
   def test_umlaut
-    simple = ExtCsv.new(IMPORT_TYPE, "txt", "german.txt")
-    pp simple
+    simple = ExtCsv.new(IMPORT_TYPE, "txt", "./data/german.txt")
+    #pp simple
+  end
+  def test_columns
+    c = ExtCsv.new(IMPORT_TYPE, "txt", TEST_FD_DATA )
+    d = c.columns(*c.datacolumns[0,2])
+    assert_equal(c.datasets(*d.datacolumns),d.datasets)
+    d = c.columns(*c.datacolumns[-3..-1])
+    assert_equal(c.datasets(*d.datacolumns),d.datasets)
   end
 end
