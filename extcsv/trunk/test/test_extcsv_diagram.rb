@@ -36,7 +36,9 @@ class TestExtCsvDisplay < Test::Unit::TestCase
                        :label_position => 'outside',:skipColumnCheck => true,
                          :type => 'lines',:groupBy => ["depth"],
                          :yrange => '[-2.5:0.5]',:onlyGroupTitle => true,
-                         :terminal => "png",:filename => "icon",:time_format => "'%Y'",:size => "800,600")
+#                         :terminal => "png",
+                         :input_time_format => "'%Y%m%d %H:%M:%S'",
+                         :filename => "icon",:output_time_format => "'%Y'",:size => "800,600")
 
   end
   def test_plotxy

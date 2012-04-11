@@ -13,6 +13,7 @@ module ExtCsvDiagram
                     :size           => nil,
                     :filename       => nil,
                     :title          => nil,
+                    :addSettings    => [],
                     :label_position => "left",
                     :label?         => true,
                     :grid           => true,
@@ -27,7 +28,8 @@ module ExtCsvDiagram
                     :logscale       => nil,
                     :add_settings   => [], 
                     :point_label?   => false,
-                    :time_format    => '"%Y-%m-%d\n%H:%M:%S"'
+                    :output_time_format => '"%Y-%m-%d\n%H:%M:%S"',
+                    :input_time_format  => '"%Y-%m-%d\n%H:%M:%S"'
   }
   @@timeColumns = %w[time time_camera zeit date datetime timestamp]
 
@@ -86,58 +88,90 @@ module ExtCsvDiagram
       end
     }
   end
+
+  def ExtCsvDiagram.setRangeAndLabel(plot,options)
+    plot.xrange  options[:xrange]  unless options[:xrange].nil?
+    plot.yrange  options[:yrange]  unless options[:yrange].nil?
+    plot.xlabel  options[:xlabel]  unless options[:xlabel].nil?
+    plot.ylabel  options[:ylabel]  unless options[:ylabel].nil?
+    plot.x2range options[:x2range] unless options[:x2range].nil?
+    plot.y2range options[:y2range] unless options[:y2range].nil?
+    plot.x2label options[:x2label] unless options[:x2label].nil?
+    plot.y2label options[:y2label] unless options[:y2label].nil?
+  end
+  def ExtCsvDiagram.setXTimeAxis(plot,input_time_format,output_time_format,*xColumns)
+    pp xColumns
+    pp input_time_format
+    pp output_time_format
+    xColumns.each_with_index {|xcol,i|
+      if @@timeColumns.include?(xcol.to_s)
+        plot.timefmt input_time_format
+        if 0 == i
+          plot.xdata 'time'
+          plot.format 'x ' + output_time_format
+        else
+          plot.x2data 'time'
+          plot.format 'x2 ' + output_time_format
+        end
+      end
+    }
+  end
+
+  def ExtCsvDiagram.addSettings(plot,settings)
+    settings.each {|setting|
+      md = /^(\w+)/.match(setting)
+      plot.set(md[1],md.post_match) unless md.nil?
+    }
+  end
+
+  def ExtCsvDiagram.setKeys(plot,options)
+    plot.key options[:label_position]
+    plot.key 'off' unless options[:label?]
+  end
+
+  def ExtCsvDiagram.setOutput(plot,options)
+    size = (options[:size].nil?) ? '' : " size #{options[:size]}"
+    plot.terminal options[:terminal] + size
+    plot.output outputfilename + "." + options[:terminal].split(" ")[0]
+  end
+
+  def ExtCsvDiagram.addDataToPlot(plot,obj,xColumn,yColumn,groupBy,options)
+    x = obj.send(xColumn)
+    y = obj.send(yColumn)
+    title = enhanceTitleByGroup(groupBy,obj)
+    plot.data << Gnuplot::DataSet.new([x,y]) {|ds|
+      unit = Units[yColumn.to_sym].nil? ? '' : "[#{Units[yColumn.to_sym]}]"
+      ds.using = @@timeColumns.include?(xColumn.to_s) ? '1:3' : '1:2'
+      ds.with  = options[:type]
+      ds.title =  options[:onlyGroupTitle] ? "#{title}" : "#{yColumn} #{unit}, #{title}"
+    }
+  end
   def ExtCsvDiagram.plot_xy(obj,xColumn,yColumn,title,options={})
-    ExtCsvDiagram.checkColumns(obj,xColumn,yColumn) unless options[:skipColumnCheck]
+    checkColumns(obj,xColumn,yColumn) unless options[:skipColumnCheck]
     options        = GRAPH_OPTIONS.merge(options)
     outputfilename = (options[:filename].nil?) ? obj.filename : options[:filename]
     groupBy        = (options[:groupBy]).nil? ? [] : options[:groupBy]
     Gnuplot.open {|gp|
       Gnuplot::Plot.new(gp) {|plot|
         plot.title "'" + title + "'"
-        plot.key options[:label_position]
-        plot.key 'off' unless options[:label?]
-        if options[:terminal] != 'x11'
-          size = (options[:size].nil?) ? '' : " size #{options[:size]}"
-          plot.terminal options[:terminal] + size
-          plot.output outputfilename + "." + options[:terminal].split(" ")[0]
-        end
+        setKeys(plot,options)
+
+        setOutput(plot,options) unless 'x11' == options[:terminal]
 
         plot.grid if options[:grid]
 
-        options[:add_settings].each {|setting|
-          md = /^(\w+)/.match(setting)
-          plot.set(md[1],md.post_match) unless md.nil?
-        }
+        addSettings(plot,options[:addSettings]) unless options[:addSettings].empty?
 
-        # handling of axes
-        plot.xrange  options[:xrange] unless options[:xrange].nil?
-        plot.yrange  options[:yrange] unless options[:yrange].nil?
-        plot.xlabel  options[:xlabel]  unless options[:xlabel].nil?
-        plot.ylabel  options[:ylabel]  unless options[:ylabel].nil?
+        setRangeAndLabel(plot,options)
 
-
-        if @@timeColumns.include?(xColumn.to_s)
-          puts "Set x to time"
-          plot.xdata 'time'
-          plot.timefmt '"%Y%m%d %H:%M:%S"'
-          plot.format 'x ' + options[:time_format]
-        end
+        setXTimeAxis(plot,options[:input_time_format],options[:output_time_format],xColumn)
 
         # Data for first x-axes
-        obj.split(*groupBy) {|ob|
-          x = ob.send(xColumn)
-          y = ob.send(yColumn)
-          title = enhanceTitleByGroup(groupBy,ob)
-          plot.data << Gnuplot::DataSet.new([x,y]) {|ds|
-            unit = Units[yColumn.to_sym].nil? ? '' : "[#{Units[yColumn.to_sym]}]"
-            ds.using = @@timeColumns.include?(xColumn.to_s) ? '1:3' : '1:2'
-            ds.with  = options[:type]
-            ds.title =  options[:onlyGroupTitle] ? "#{title}" : "#{yColumn} #{unit}, #{title}"
-          }
+        obj.split(*groupBy) {|obj|
+          ExtCsvDiagram.addDataToPlot(plot,obj,xColumn,yColumn,groupBy,options)
 
           # set labels if requested
           set_pointlabel(ob,plot, xColumn, x,y, options[:label_column],options[:label_fsize]) if options[:point_label?]
-
         }
       }
     }
@@ -178,25 +212,17 @@ module ExtCsvDiagram
         plot.y2tics 'in'     unless ( y2_cols.nil? or y2_cols.empty? )
         plot.x2tics 'in'     unless ( (x2_col.respond_to?(:empty?) and x2_col.empty?) or x2_col == nil)
 
-        plot.xrange  options[:xrange] unless options[:xrange].nil?
-        plot.yrange  options[:yrange] unless options[:yrange].nil?
-        plot.x2range options[:x2range] unless options[:x2range].nil?
-        plot.y2range options[:y2range] unless options[:y2range].nil?
-        plot.xlabel  options[:xlabel]  unless options[:xlabel].nil?
-        plot.ylabel  options[:ylabel]  unless options[:ylabel].nil?
-        plot.x2label options[:x2label] unless options[:x2label].nil?
-        plot.y2label options[:y2label] unless options[:y2label].nil?
-
+        ExtCsvDiagram.setRangeAndLabel(plot,options)
 
         if @@timeColumns.include?(x1_col.to_s)
           plot.xdata 'time'
           plot.timefmt '"%Y-%m-%d %H:%M:%S"'
-          plot.format 'x ' + options[:time_format]
+          plot.format 'x ' + options[:output_time_format]
         end
         if @@timeColumns.include?(x2_col.to_s)
           plot.x2data 'time'
           plot.timefmt '"%Y-%m-%d %H:%M:%S"'
-          plot.format 'x2 ' + options[:time_format]
+          plot.format 'x2 ' + options[:output_time_format]
         end
 
         # Data for first x-axes
