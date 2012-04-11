@@ -129,10 +129,8 @@ module ExtCsvDiagram
     plot.y2label options[:y2label] unless options[:y2label].nil?
   end
   def ExtCsvDiagram.setXTimeAxis(plot,input_time_format,output_time_format,*xColumns)
-    pp xColumns
-    pp input_time_format
-    pp output_time_format
     xColumns.each_with_index {|xcol,i|
+      next if xcol.nil? or xcol.kind_of?(Hash)
       if @@timeColumns.include?(xcol.to_s)
         plot.timefmt input_time_format
         if 0 == i
@@ -238,21 +236,12 @@ module ExtCsvDiagram
         }
 
         # handling of axes
-        plot.y2tics 'in'     unless ( y2_cols.nil? or y2_cols.empty? )
-        plot.x2tics 'in'     unless ( (x2_col.respond_to?(:empty?) and x2_col.empty?) or x2_col == nil)
+        plot.y2tics 'in' unless ( y2_cols.nil? or y2_cols.empty? )
+        plot.x2tics 'in' unless ( x2_col.nil? or x2_col.kind_of?(Hash) )
 
         ExtCsvDiagram.setRangeAndLabel(plot,options)
 
-        if @@timeColumns.include?(x1_col.to_s)
-          plot.xdata 'time'
-          plot.timefmt '"%Y-%m-%d %H:%M:%S"'
-          plot.format 'x ' + options[:output_time_format]
-        end
-        if @@timeColumns.include?(x2_col.to_s)
-          plot.x2data 'time'
-          plot.timefmt '"%Y-%m-%d %H:%M:%S"'
-          plot.format 'x2 ' + options[:output_time_format]
-        end
+        setXTimeAxis(plot,options[:input_time_format],options[:output_time_format],x1_col,x2_col)
 
         # Data for first x-axes
         obj.split(*group_by) {|ob|

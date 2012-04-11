@@ -63,10 +63,10 @@ class TestExtCsvDisplay < Test::Unit::TestCase
                        :label_positions => 'outside',
                        :dataset_title => 'notitle',
                        :mode => "size"                       )
-    f = qpol_drift.selectBy(:col4 => 5)
-    f.plot([],"zeit",["col6"],:mode => "drift")
-    qpol.selectBy(:col2 => "5",:col3 => "(140|80)").plot(
-      "col4",
+   f = qpol_drift.selectBy(:col4 => 5)
+    f.plot([],"zeit",["col6"],:type => 'lines')
+    qpol.plot([],
+      "step",
       ["col7","col8"],
       {
       :point_label? => true,
@@ -74,41 +74,28 @@ class TestExtCsvDisplay < Test::Unit::TestCase
       :label_position => "right",
       :datasets => {:using => [nil,'1:($2*10)']},
       :graph_title => "USING-TEST",
-      :mode => "qp"
-    }
-    )
-    return
-    qpol_drift.selectBy(:col2 => "5").plot(
-      "zeit",
-      ["col2","col3"],
-      {
-      :yrange => "[0.7:1.4]",
-      :graph_title => "Plotted from one File",
-      :mode => "drift",
-      :time_format => "'%H:%M'"
-    }
-    )
-    qpol_drift.selectBy(:focus => "5").plot(["zeit","zeit"],
-                                            ["iqa","iqc"],
-                                            {
-      #:yrange => "[0.7:1.4]",
-      :graph_title => "Multi-Graph",
-      :mode => "multi",
-      :label_column => "col5",
-      :point_label? => true,
-      :time_format => "'%H:%M'"
-    })
-    qpol_drift.selectBy(:col2 => "5",:col4 => "120").operate_on(:col1,"*rand(10.0)").operate_on(:x2,"*10.2*rand(1.0)").operate_on(:z1,"/rand(8.0)").operate_on(:z2,"*rand(10.0)").plot(["col1","col2"],["col1","col2"],
-                                                                                                                                                                                       :graph_type => 'vectors',
-                                                                                                                                                                                       :mode => "multi",
-                                                                                                                                                                                       :arrowstyle => " arrow 1 head filled size screen 0.2, 30, 45 ",
-                                                                                                                                                                                       :linewidth => "1",
-                                                                                                                                                                                       #:linetype => "rgb '#ffee33'",
-                                                                                                                                                                                       :dataset_title => ["t3","t1"],
-                                                                                                                                                                                       :drawBox => "0,0,5,5,gray,1",
-                                                                                                                                                                                       :drawCurve => "1,1,6,6,blue,2",
-                                                                                                                                                                                       :graph_title => "Multi-Vectors"
-                                                                                                                                                                                      ) #if false
+      :mode => "qp" })
+#   qpol_drift.selectBy(:focus => "5").plot(["zeit","zeit"],
+#                                           ["iqa","iqc"],
+#                                           {
+#     #:yrange => "[0.7:1.4]",
+#     :graph_title => "Multi-Graph",
+#     :mode => "multi",
+#     :label_column => "col5",
+#     :point_label? => true,
+#     :time_format => "'%H:%M'"
+#   })
+#   qpol.selectBy(:col2 => "5",:col4 => "120").operate_on(:col1,"*rand(10.0)").operate_on(:x2,"*10.2*rand(1.0)").operate_on(:z1,"/rand(8.0)").operate_on(:z2,"*rand(10.0)").plot(["col1","col2"],["col1","col2"],
+#                                                                                                                                                                                      :graph_type => 'vectors',
+#                                                                                                                                                                                      :mode => "multi",
+#                                                                                                                                                                                      :arrowstyle => " arrow 1 head filled size screen 0.2, 30, 45 ",
+#                                                                                                                                                                                      :linewidth => "1",
+#                                                                                                                                                                                      #:linetype => "rgb '#ffee33'",
+#                                                                                                                                                                                      :dataset_title => ["t3","t1"],
+#                                                                                                                                                                                      :drawBox => "0,0,5,5,gray,1",
+#                                                                                                                                                                                      :drawCurve => "1,1,6,6,blue,2",
+#                                                                                                                                                                                      :graph_title => "Multi-Vectors"
+#                                                                                                                                                                                     ) #if false
   end
   def test_extcsv_diagram_limits
     td = ExtCsv.new("file","txt",TEST_DATA_NEW)
