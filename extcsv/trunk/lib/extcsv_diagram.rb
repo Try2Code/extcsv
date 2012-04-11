@@ -27,7 +27,7 @@ module ExtCsvDiagram
                     :logscale       => nil,
                     :add_settings   => [], 
                     :point_label?   => false,
-                    :time_format    => '"%d.%m\n%H:%M:%S"'
+                    :time_format    => '"%Y-%m-%d\n%H:%M:%S"'
   }
   @@timeColumns = %w[time time_camera zeit date datetime timestamp]
 
@@ -68,14 +68,80 @@ module ExtCsvDiagram
   def ExtCsvDiagram.enhanceTitleByGroup(group_by,ob)
     title = ''
     group_by.each {|col|
-      colunit = Units[col.to_sym].nil? ? col.to_s : "[#{Units[col.to_sym]}]"
-      name = [ob.send(col)[0],colunit]
-      title += (col.to_sym == :focus) ? name.reverse.join('') : name[0]
-      title += " " unless col == group_by.last
+      unit    = Units[col.to_sym]
+      colunit = unit.nil? ? col.to_s : unit
+      name    = [ob.send(col)[0],colunit]
+      title  += (col.to_sym != :focus) ? name.join('') : name[0]
+      title  += " " unless col == group_by.last
     }
     title
   end
 
+  def ExtCsvDiagram.checkColumns(obj,*cols)
+    cols.each {|col|
+      next if col.kind_of?(Hash)
+      unless obj.datacolumns.include?(col)
+        print "[plot] Input data does NOT contain column '#{col.to_s}'\n"
+        raise ArgumentError
+      end
+    }
+  end
+  def ExtCsvDiagram.plot_xy(obj,xColumn,yColumn,title,options={})
+    ExtCsvDiagram.checkColumns(obj,xColumn,yColumn) unless options[:skipColumnCheck]
+    options        = GRAPH_OPTIONS.merge(options)
+    outputfilename = (options[:filename].nil?) ? obj.filename : options[:filename]
+    groupBy        = (options[:groupBy]).nil? ? [] : options[:groupBy]
+    Gnuplot.open {|gp|
+      Gnuplot::Plot.new(gp) {|plot|
+        plot.title "'" + title + "'"
+        plot.key options[:label_position]
+        plot.key 'off' unless options[:label?]
+        if options[:terminal] != 'x11'
+          size = (options[:size].nil?) ? '' : " size #{options[:size]}"
+          plot.terminal options[:terminal] + size
+          plot.output outputfilename + "." + options[:terminal].split(" ")[0]
+        end
+
+        plot.grid if options[:grid]
+
+        options[:add_settings].each {|setting|
+          md = /^(\w+)/.match(setting)
+          plot.set(md[1],md.post_match) unless md.nil?
+        }
+
+        # handling of axes
+        plot.xrange  options[:xrange] unless options[:xrange].nil?
+        plot.yrange  options[:yrange] unless options[:yrange].nil?
+        plot.xlabel  options[:xlabel]  unless options[:xlabel].nil?
+        plot.ylabel  options[:ylabel]  unless options[:ylabel].nil?
+
+
+        if @@timeColumns.include?(xColumn.to_s)
+          puts "Set x to time"
+          plot.xdata 'time'
+          plot.timefmt '"%Y%m%d %H:%M:%S"'
+          plot.format 'x ' + options[:time_format]
+        end
+
+        # Data for first x-axes
+        obj.split(*groupBy) {|ob|
+          x = ob.send(xColumn)
+          y = ob.send(yColumn)
+          title = enhanceTitleByGroup(groupBy,ob)
+          plot.data << Gnuplot::DataSet.new([x,y]) {|ds|
+            unit = Units[yColumn.to_sym].nil? ? '' : "[#{Units[yColumn.to_sym]}]"
+            ds.using = @@timeColumns.include?(xColumn.to_s) ? '1:3' : '1:2'
+            ds.with  = options[:type]
+            ds.title =  options[:onlyGroupTitle] ? "#{title}" : "#{yColumn} #{unit}, #{title}"
+          }
+
+          # set labels if requested
+          set_pointlabel(ob,plot, xColumn, x,y, options[:label_column],options[:label_fsize]) if options[:point_label?]
+
+        }
+      }
+    }
+  end
   def ExtCsvDiagram.plot(obj,
            group_by, # array[col0, ..., colN]
            x1_col,
@@ -84,14 +150,8 @@ module ExtCsvDiagram
            y2_cols=[],
            title='',
            options={})
-    # some pretest on the user defined column names
-    [group_by,x1_col,y1_cols,x2_col,y2_cols].flatten.uniq.compact.each {|col|
-      next if col.kind_of?(Hash)
-      unless obj.datacolumns.include?(col)
-        print "[plot] Input data does NOT contain column '#{col.to_s}'\n"
-        raise ArgumentError
-      end
-    }
+
+    ExtCsvDiagram.checkColumns(obj,*([group_by,x1_col,y1_cols,x2_col,y2_cols].flatten.uniq.compact))
 
     options        = GRAPH_OPTIONS.merge(options)
     outputfilename = (options[:filename].nil?) ? obj.filename : options[:filename]

@@ -12,15 +12,17 @@
 module ExtCsvUnits
   Units = 
     {
-      :col1             => "kV",
-      :col2             => "kV",
-      :col3             => "kV",
-      :col4             => "kV",
-      :col5             => "kV",
-      :col6             => "kV",
-      :col7             => "kV",
-      :col8             => "kV",
-      :zeit           => "yyyy-mm-dd hh:mm:ss",
-      :time           => "yyyy-mm-dd hh:mm:ss"
+      :col1  => "kV",
+      :col2  => "kV",
+      :col3  => "kV",
+      :col4  => "kV",
+      :col5  => "kV",
+      :col6  => "kV",
+      :col7  => "kV",
+      :col8  => "kV",
+      :zeit  => "yyyy-mm-dd hh:mm:ss",
+      :time  => "yyyy-mm-dd hh:mm:ss",
+      :depth => "m",
+      :Temp  => "degC"
     }
 end

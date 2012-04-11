@@ -12,7 +12,6 @@ class ExtCsv
   def setmode(mode)
     @mode = mode
   end
-  public :deep_split
 end
 
 class TestExtCsv < Test::Unit::TestCase

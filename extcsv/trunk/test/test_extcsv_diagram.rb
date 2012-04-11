@@ -15,90 +15,117 @@ class TestExtCsvDisplay < Test::Unit::TestCase
   TEST_DATA_NEW   = TEST_DIR + "/data/file01.txt"
   DATALOGGER_DATA = TEST_DIR + ""
   IMPORT_TYPE     = "file"
+  ICON = "/home/ram/src/git/icon/experiments/xom.r8563.tsrel_R2B02_linDesity/xomFldminT.dat"
 
   def test_simple
     f=ExtCsv.new("file","txt",TEST_DATA)
     ExtCsvDiagram.plot(f,["col4"],"col0",["col1"])
   end
-   def test_gnuplot
-     test_file = TEST_DATA
-     drift_test_file = TEST_DATA_NEW
-     qpol = ExtCsv.new(IMPORT_TYPE,"txt",test_file)
-     qpol_drift = ExtCsv.new(IMPORT_TYPE,"txt",drift_test_file)
-     f = qpol.selectBy(:col4 => /(5|4)/)
-     assert_not_equal(0,f.size)
-     ExtCsvDiagram.plot(f,["col4"],"col1",
-                        ["col5"],nil,[],'',
-                        :graph_title => "SIZEMODE",
-                        :point_label? => true,
-                        :label_positions => 'outside',
-                        :dataset_title => 'notitle',
-                        :mode => "size"                       )
-     f = qpol_drift.selectBy(:col4 => 5)
-     f.plot([],"zeit",["col6"],:mode => "drift")
-     qpol.selectBy(:col2 => "5",:col3 => "(140|80)").plot(
-          "col4",
-          ["col7","col8"],
-          {
-            :point_label? => true,
-            :xrange => "[0:1200]",
-            :label_position => "right",
-            :datasets => {:using => [nil,'1:($2*10)']},
-            :graph_title => "USING-TEST",
-            :mode => "qp"
-          }
-        )
-return
-     qpol_drift.selectBy(:col2 => "5").plot(
-       "zeit",
-       ["col2","col3"],
-       {
-         :yrange => "[0.7:1.4]",
-         :graph_title => "Plotted from one File",
-         :mode => "drift",
-         :time_format => "'%H:%M'"
-       }
-     )
-     qpol_drift.selectBy(:focus => "5").plot(["zeit","zeit"],
-                                           ["iqa","iqc"],
-                                           {
-                                             #:yrange => "[0.7:1.4]",
-                                             :graph_title => "Multi-Graph",
-                                             :mode => "multi",
-                                             :label_column => "col5",
-                                             :point_label? => true,
-                                             :time_format => "'%H:%M'"
-                                           })
+  def test_icon
+    icon = ExtCsv.new(IMPORT_TYPE,"psv",ICON)
+
+
+
+
+
+    icon.datetime = []
+    icon.date.each_with_index{|date,i| icon.datetime << [date,icon.time[i]].join(' ') }
+
+    [:date,:time,:depth,:temp].each {|col| pp [col.to_s,icon.send(col).max].join('[max]: ') }
+    ExtCsvDiagram.plot_xy(icon,"datetime","temp",'ICON OCE_BASE (lin. Desity): Min. Tempratures at different depths',
+                       :label_position => 'outside',:skipColumnCheck => true,
+                         :type => 'lines',:groupBy => ["depth"],
+                         :yrange => '[-2.5:0.5]',:onlyGroupTitle => true,
+                         :terminal => "png",:filename => "icon",:time_format => "'%Y'",:size => "800,600")
+
+  end
+  def test_plotxy
+    f = ExtCsv.new(IMPORT_TYPE,"txt",TEST_DATA)
+    ExtCsvDiagram.plot_xy(f,"step","col5",'test',
+                       :label_position => 'outside',
+                       :groupBy => [:col4],
+                         :type => 'lines')
+  end
+  def test_gnuplot
+    test_file = TEST_DATA
+    drift_test_file = TEST_DATA_NEW
+    qpol = ExtCsv.new(IMPORT_TYPE,"txt",test_file)
+    qpol_drift = ExtCsv.new(IMPORT_TYPE,"txt",drift_test_file)
+
+    f = qpol.selectBy(:col4 => /(5|4)/)
+    assert_not_equal(0,f.size)
+    ExtCsvDiagram.plot(f,["col4"],"col1",
+                       ["col5"],nil,[],'',
+                       :graph_title => "SIZEMODE",
+                       :point_label? => true,
+                       :label_positions => 'outside',
+                       :dataset_title => 'notitle',
+                       :mode => "size"                       )
+    f = qpol_drift.selectBy(:col4 => 5)
+    f.plot([],"zeit",["col6"],:mode => "drift")
+    qpol.selectBy(:col2 => "5",:col3 => "(140|80)").plot(
+      "col4",
+      ["col7","col8"],
+      {
+      :point_label? => true,
+      :xrange => "[0:1200]",
+      :label_position => "right",
+      :datasets => {:using => [nil,'1:($2*10)']},
+      :graph_title => "USING-TEST",
+      :mode => "qp"
+    }
+    )
+    return
+    qpol_drift.selectBy(:col2 => "5").plot(
+      "zeit",
+      ["col2","col3"],
+      {
+      :yrange => "[0.7:1.4]",
+      :graph_title => "Plotted from one File",
+      :mode => "drift",
+      :time_format => "'%H:%M'"
+    }
+    )
+    qpol_drift.selectBy(:focus => "5").plot(["zeit","zeit"],
+                                            ["iqa","iqc"],
+                                            {
+      #:yrange => "[0.7:1.4]",
+      :graph_title => "Multi-Graph",
+      :mode => "multi",
+      :label_column => "col5",
+      :point_label? => true,
+      :time_format => "'%H:%M'"
+    })
     qpol_drift.selectBy(:col2 => "5",:col4 => "120").operate_on(:col1,"*rand(10.0)").operate_on(:x2,"*10.2*rand(1.0)").operate_on(:z1,"/rand(8.0)").operate_on(:z2,"*rand(10.0)").plot(["col1","col2"],["col1","col2"],
-                                                :graph_type => 'vectors',
-                                                :mode => "multi",
-                                                :arrowstyle => " arrow 1 head filled size screen 0.2, 30, 45 ",
-                                                :linewidth => "1",
-                                                #:linetype => "rgb '#ffee33'",
-                                                :dataset_title => ["t3","t1"],
-                                                :drawBox => "0,0,5,5,gray,1",
-                                                :drawCurve => "1,1,6,6,blue,2",
-                                                :graph_title => "Multi-Vectors"
-                                               ) #if false
-   end
-   def test_extcsv_diagram_limits
-     td = ExtCsv.new("file","txt",TEST_DATA_NEW)
-     ExtCsvDiagram.plot(td[0,21],
-                        [:col1],
-                        :index,
-                        [:col3],
-                        :zeit,
-                        [:col8],
-                        'limit test', 
-                        :y1limits       => [1.9],
-                        :y1limitname    => "y1 Limit",
-                        :y2limits       => [8.2],
-                        :y2limitname    => "y2 Limit",
-                        :xlabel         => "index",
-                        :ylabel         => "YLabel",
-                        :y2label        => "'Y2Label'",
-                        :label_position => "out horiz bot",
-                        :time_format    => "'%H:%M'",
-                                      :linewidth      => 1)
-   end
+                                                                                                                                                                                       :graph_type => 'vectors',
+                                                                                                                                                                                       :mode => "multi",
+                                                                                                                                                                                       :arrowstyle => " arrow 1 head filled size screen 0.2, 30, 45 ",
+                                                                                                                                                                                       :linewidth => "1",
+                                                                                                                                                                                       #:linetype => "rgb '#ffee33'",
+                                                                                                                                                                                       :dataset_title => ["t3","t1"],
+                                                                                                                                                                                       :drawBox => "0,0,5,5,gray,1",
+                                                                                                                                                                                       :drawCurve => "1,1,6,6,blue,2",
+                                                                                                                                                                                       :graph_title => "Multi-Vectors"
+                                                                                                                                                                                      ) #if false
+  end
+  def test_extcsv_diagram_limits
+    td = ExtCsv.new("file","txt",TEST_DATA_NEW)
+    ExtCsvDiagram.plot(td[0,21],
+                       [:col1],
+                       :index,
+                       [:col3],
+                       :zeit,
+                       [:col8],
+                       'limit test', 
+                       :y1limits       => [1.9],
+                       :y1limitname    => "y1 Limit",
+                       :y2limits       => [8.2],
+                       :y2limitname    => "y2 Limit",
+                       :xlabel         => "index",
+                       :ylabel         => "YLabel",
+                       :y2label        => "'Y2Label'",
+                       :label_position => "out horiz bot",
+                       :time_format    => "'%H:%M'",
+                       :linewidth      => 1)
+  end
 end
