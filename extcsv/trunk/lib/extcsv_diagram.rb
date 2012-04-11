@@ -29,7 +29,7 @@ module ExtCsvDiagram
                     :point_label?   => false,
                     :time_format    => '"%d.%m\n%H:%M:%S"'
   }
-  @@timeColumns = %w[time time_camera zeit]
+  @@timeColumns = %w[time time_camera zeit date datetime timestamp]
 
   def ExtCsvDiagram.set_pointlabel(obj, plot, x_col, x, y, label_col=nil, size='10')
     timemode = (%w[zeit zeitstempel time timestamp].include?(x_col.to_s))
@@ -144,6 +144,8 @@ module ExtCsvDiagram
           y1_cols.each {|y_col|
             x = ob.send(x1_col)
             y = ob.send(y_col)
+           #dbg = {:x => x,:y => y}
+           #pp dbg
             title = enhanceTitleByGroup(group_by,ob)
             plot.data << Gnuplot::DataSet.new([x,y]) {|ds|
               unit = Units[y_col.to_sym].nil? ? '' : "[#{Units[y_col.to_sym]}]"
