@@ -172,6 +172,7 @@ module ExtCsvDiagram
       ds.with  = options[:type]
       ds.title =  options[:onlyGroupTitle] ? "#{title}" : "#{yColumn} #{unit}, #{title}"
     }
+    return [x,y]
   end
   def ExtCsvDiagram.plot_xy(obj,xColumn,yColumn,title,options={})
     checkColumns(obj,xColumn,yColumn) unless options[:skipColumnCheck]
@@ -195,7 +196,7 @@ module ExtCsvDiagram
 
         # Data for first x-axes
         obj.split(*groupBy) {|obj|
-          ExtCsvDiagram.addDataToPlot(plot,obj,xColumn,yColumn,groupBy,options)
+          x,y = ExtCsvDiagram.addDataToPlot(plot,obj,xColumn,yColumn,groupBy,options)
 
           # set labels if requested
           set_pointlabel(ob,plot, xColumn, x,y, options[:label_column],options[:label_fsize]) if options[:point_label?]
@@ -230,37 +231,23 @@ module ExtCsvDiagram
 
         plot.grid if options[:grid]
 
-        options[:add_settings].each {|setting|
-          md = /^(\w+)/.match(setting)
-          plot.set(md[1],md.post_match) unless md.nil?
-        }
+        addSettings(plot,options[:addSettings]) unless options[:addSettings].empty?
 
         # handling of axes
         plot.y2tics 'in' unless ( y2_cols.nil? or y2_cols.empty? )
         plot.x2tics 'in' unless ( x2_col.nil? or x2_col.kind_of?(Hash) )
 
-        ExtCsvDiagram.setRangeAndLabel(plot,options)
+        setRangeAndLabel(plot,options)
 
         setXTimeAxis(plot,options[:input_time_format],options[:output_time_format],x1_col,x2_col)
 
         # Data for first x-axes
         obj.split(*group_by) {|ob|
           y1_cols.each {|y_col|
-            x = ob.send(x1_col)
-            y = ob.send(y_col)
-           #dbg = {:x => x,:y => y}
-           #pp dbg
-            title = enhanceTitleByGroup(group_by,ob)
-            plot.data << Gnuplot::DataSet.new([x,y]) {|ds|
-              unit = Units[y_col.to_sym].nil? ? '' : "[#{Units[y_col.to_sym]}]"
-              ds.using = @@timeColumns.include?(x1_col.to_s) ? '1:3' : '1:2'
-              ds.with  = options[:type] + " axes x1y1 lw #{options[:linewidth]}"
-              ds.title =  options[:onlyGroupTitle] ? "#{title}" : "#{y_col} #{unit}, #{title}"
-            }
+            x,y = ExtCsvDiagram.addDataToPlot(plot,ob,x1_col,y_col,group_by,options)
 
             # set labels if requested
             set_pointlabel(ob,plot, x1_col, x,y, options[:label_column],options[:label_fsize]) if options[:point_label?]
-
           }
           y2_cols.each {|y_col|
             x = ob.send(x1_col)
