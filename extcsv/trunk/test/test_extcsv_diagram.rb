@@ -8,7 +8,7 @@ require 'pp'
 # Author:: Ralf Müller
 ################################################################################
 class TestExtCsvDisplay < Test::Unit::TestCase
-#  include ExtCsvDiagram
+  include ExtCsvDiagram
 
   TEST_DIR        = "test"
   TEST_DATA       = TEST_DIR + "/data/file00.txt"
@@ -16,25 +16,27 @@ class TestExtCsvDisplay < Test::Unit::TestCase
   DATALOGGER_DATA = TEST_DIR + ""
   IMPORT_TYPE     = "file"
 
+  def test_simple
+    f=ExtCsv.new("file","txt",TEST_DATA)
+    ExtCsvDiagram.plot(f,["col4"],"col0",["col1"])
+  end
    def test_gnuplot
-     test_file = TEST_DIR + ""
-     drift_test_file = TEST_DIR + ""
+     test_file = TEST_DATA
+     drift_test_file = TEST_DATA_NEW
      qpol = ExtCsv.new(IMPORT_TYPE,"txt",test_file)
      qpol_drift = ExtCsv.new(IMPORT_TYPE,"txt",drift_test_file)
-     qpol.select_by(:col1 => "(5|4)").gnuplot("col1",
-                                           ["col2"],
-                                           :graph_title => "SIZEMODE",
-                                           :point_label? => true,
-                                           :label_positions => 'outside',
-                                           :dataset_title => 'notitle',
-                                           :mode => "size",
-                                           :xrange => "[1.0:1.4]",
-                                           :yrange => "[1.0:1.4]"
-                                          )
-     qpol.select_by(:col1 => 5).gnuplot("zeit",["col2"],:mode => "drift")
-     qpol.select_by(:col1 => "5").gnuplot("col3",
-                                           ["col7","col8"])
-     qpol.select_by(:col2 => "5",:col3 => "(140|80)").gnuplot(
+     f = qpol.selectBy(:col4 => /(5|4)/)
+     assert_not_equal(0,f.size)
+     ExtCsvDiagram.plot(f,["col4"],"col1",
+                        ["col5"],nil,[],'',
+                        :graph_title => "SIZEMODE",
+                        :point_label? => true,
+                        :label_positions => 'outside',
+                        :dataset_title => 'notitle',
+                        :mode => "size"                       )
+     f = qpol_drift.selectBy(:col4 => 5)
+     f.plot([],"zeit",["col6"],:mode => "drift")
+     qpol.selectBy(:col2 => "5",:col3 => "(140|80)").plot(
           "col4",
           ["col7","col8"],
           {
@@ -46,7 +48,8 @@ class TestExtCsvDisplay < Test::Unit::TestCase
             :mode => "qp"
           }
         )
-     qpol_drift.select_by(:col2 => "5").gnuplot(
+return
+     qpol_drift.selectBy(:col2 => "5").plot(
        "zeit",
        ["col2","col3"],
        {
@@ -56,7 +59,7 @@ class TestExtCsvDisplay < Test::Unit::TestCase
          :time_format => "'%H:%M'"
        }
      )
-     qpol_drift.select_by(:focus => "5").gnuplot(["zeit","zeit"],
+     qpol_drift.selectBy(:focus => "5").plot(["zeit","zeit"],
                                            ["iqa","iqc"],
                                            {
                                              #:yrange => "[0.7:1.4]",
@@ -66,7 +69,7 @@ class TestExtCsvDisplay < Test::Unit::TestCase
                                              :point_label? => true,
                                              :time_format => "'%H:%M'"
                                            })
-    qpol_drift.select_by(:col2 => "5",:col4 => "120").operate_on(:col1,"*rand(10.0)").operate_on(:x2,"*10.2*rand(1.0)").operate_on(:z1,"/rand(8.0)").operate_on(:z2,"*rand(10.0)").gnuplot(["col1","col2"],["col1","col2"],
+    qpol_drift.selectBy(:col2 => "5",:col4 => "120").operate_on(:col1,"*rand(10.0)").operate_on(:x2,"*10.2*rand(1.0)").operate_on(:z1,"/rand(8.0)").operate_on(:z2,"*rand(10.0)").plot(["col1","col2"],["col1","col2"],
                                                 :graph_type => 'vectors',
                                                 :mode => "multi",
                                                 :arrowstyle => " arrow 1 head filled size screen 0.2, 30, 45 ",
@@ -77,54 +80,6 @@ class TestExtCsvDisplay < Test::Unit::TestCase
                                                 :drawCurve => "1,1,6,6,blue,2",
                                                 :graph_title => "Multi-Vectors"
                                                ) #if false
-   end
-   def test_ExtCsv_gnuplot
-     test_data       = TEST_DIR + ""
-     test_data = TEST_DIR + ""
-     qpol = ExtCsv.new(IMPORT_TYPE,"txt",TEST_DATA).select_by(:col3 => "5",
-                                                              :col2 => "100")
-     qpol_ = ExtCsv.new(IMPORT_TYPE,"txt",test_data).select_by(:col3 => "5",
-                                                               :col2 => "100")
-      ExtCsv.gnuplot([qpol,qpol_],
-                       ["9416 Gen1","9416 Gen3"],
-                       "col1",
-                       ["col7","col8"])
-      ExtCsv.gnuplot([qpol,qpol_],
-                       ["9416 Gen1","9416 Gen3"],
-                       "col1",
-                       ["col5"])
-   end
- 
-   def _test_gnuplot_with_combined_qpols
-     qpols_const = []
-     qpols_kv_const = []
-     qpols_ = []
-     # mA = const
-     drift_files = [ "test/data/file02.txt" , "test/data/file03.txt"]
-     drift_files.each {|dfile|
-       qpols_const << ExtCsv.new(IMPORT_TYPE,"txt",dfile).selectBy(:col4 => "5")
-     }
-     
-     ExtCsv.gnuplot(qpols_const,
-                      ["Title0","Title1","Title2"],
-                      "zeit",
-                      ["col8","col7"],
-                      {:graph_type => "points",
-                       :graph_title => "Display more than one ExtCsv object"}
-                     )
-     qpol = ExtCsv.concat(*qpols_ma_const)
-     qpol.gnuplot("zeit",
-                  ["col2","col2"],
-                  { :mode => "drift",
-                    :yrange => "[0.7:1.4]",
-                    :graph_title => "Plotted from a combined Object: col2 = const"
-                  }
-                 )
-   end
-   
-   def test_tube_diagram_labels
-     erg_csv = ExtCsv.new("file","txt",TEST_DATA_NEW)[0..10]
-     ExtCsvDiagram.plot(erg_csv,[],:col2,[:col7,:col8],'',[],'',:point_label? => true,:label_column => :string)
    end
    def test_extcsv_diagram_limits
      td = ExtCsv.new("file","txt",TEST_DATA_NEW)

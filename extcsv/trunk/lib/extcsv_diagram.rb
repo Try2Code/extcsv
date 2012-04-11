@@ -84,9 +84,18 @@ module ExtCsvDiagram
            y2_cols=[],
            title='',
            options={})
-  
-    options = GRAPH_OPTIONS.merge(options)
+    # some pretest on the user defined column names
+    [group_by,x1_col,y1_cols,x2_col,y2_cols].flatten.uniq.compact.each {|col|
+      next if col.kind_of?(Hash)
+      unless obj.datacolumns.include?(col)
+        print "[plot] Input data does NOT contain column '#{col.to_s}'\n"
+        raise ArgumentError
+      end
+    }
+
+    options        = GRAPH_OPTIONS.merge(options)
     outputfilename = (options[:filename].nil?) ? obj.filename : options[:filename]
+
     Gnuplot.open {|gp|
       Gnuplot::Plot.new(gp) {|plot|
         plot.title "'" + title + "'"

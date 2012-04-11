@@ -16,13 +16,13 @@ class ExtCsv
 end
 
 class TestExtCsv < Test::Unit::TestCase
-  TEST_DIR        = "test/"
-  TEST_DIR        = ""
-  TEST_DATA_DIR   = TEST_DIR + "data/"
-  TEST_DATA       = TEST_DIR + "data/file00.txt"
-  TEST_DATA_NEW   = TEST_DIR + "data/file01.txt"
-  TEST_FD_DATA    = TEST_DATA_NEW
-  ERG_CSV_DATA    = TEST_DIR + "data/file04.csv"
+  TEST_DIR         = "test/"
+  TEST_DATA_DIR    = TEST_DIR + "data/"
+  TEST_DATA        = TEST_DIR + "data/file00.txt"
+  TEST_DATA_NEW    = TEST_DIR + "data/file01.txt"
+  TEST_DATA_GERMAN = TEST_DIR + "data/german.txt"
+  TEST_FD_DATA     = TEST_DATA_NEW
+  ERG_CSV_DATA     = TEST_DIR + "data/file04.csv"
   ERG_CSV_DATA_    = TEST_DIR + "data/file05.csv"
   ERG_CSV_DATA.freeze
   TEST_OUTOUT_DIR = TEST_DIR + "output"
@@ -30,6 +30,10 @@ class TestExtCsv < Test::Unit::TestCase
   def test_create
     test_simple = ExtCsv.new(IMPORT_TYPE,"txt",TEST_DATA)
     assert_equal("txt",test_simple.datatype)
+  end
+  def test_respond
+    test_simple = ExtCsv.new(IMPORT_TYPE,"txt",TEST_DATA)
+    %w|step try col1 col2 col4|.each {|col|  assert_respond_to(test_simple,col.to_sym)}
   end
   def test_create_csv
     test_simple = ExtCsv.new(IMPORT_TYPE,"ssv",ERG_CSV_DATA)
@@ -302,8 +306,6 @@ class TestExtCsv < Test::Unit::TestCase
     assert_equal(ExtCsv.concat(obj0, obj1),ExtCsv.concat(*[obj0, obj1]))
     newobj01 = ExtCsv.concat(obj0, obj1)
     assert_equal(228,newobj01.size)
-    obj0.delete_field(:step)
-    obj2.delete_field(:step)
     #pp obj0.rsize
     #pp obj2.rsize
     newobj02 = ExtCsv.concat(obj0, obj2)
@@ -494,7 +496,7 @@ class TestExtCsv < Test::Unit::TestCase
     assert_nil(csv + simple0)
   end
   def test_version
-    assert_equal('0.11.0',ExtCsv::VERSION)
+    assert_equal('0.12.0',ExtCsv::VERSION)
   end
 
   def test_add
@@ -509,7 +511,7 @@ class TestExtCsv < Test::Unit::TestCase
   end
 
   def test_umlaut
-    simple = ExtCsv.new(IMPORT_TYPE, "txt", "./data/german.txt")
+    simple = ExtCsv.new(IMPORT_TYPE, "txt", TEST_DATA_GERMAN)
     #pp simple
   end
   def test_columns

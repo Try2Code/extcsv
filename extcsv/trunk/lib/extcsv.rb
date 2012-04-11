@@ -1,5 +1,6 @@
 require 'csv'
 require 'ostruct'
+require 'extcsv_diagram'
 
 class Nil
   def to_s; ''; end
@@ -29,7 +30,7 @@ end
 # ==== License: BSD - see {license file}[http:/extcsv.rubyforge.org/svn/extcsv/trunk/LICENSE]
 ################################################################################
 class ExtCsv < OpenStruct
-  VERSION = '0.11.0'
+  VERSION = '0.12.0'
 
   include Comparable
   include Enumerable
@@ -684,7 +685,11 @@ class ExtCsv < OpenStruct
   def ExtCsv.combine(obj, obj_=nil)
     obj.combine(obj_)
   end
-  private :deep_copy, :deep_split, :set_separators, :parse_content, :change_time_format
+
+  def plot(*args)
+    ExtCsvDiagram.plot(self,*args)
+  end
+  private :deep_copy, :set_separators, :parse_content, :change_time_format
 end
 
 class ExtCsvExporter
