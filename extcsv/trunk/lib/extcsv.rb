@@ -136,7 +136,7 @@ class ExtCsv < OpenStruct
     # remove blank lines
     filecontent = filecontent.gsub(/\r\r/,"\r").gsub(/(\r\n){2,}/,"\r\n").gsub(/\n{2,}/,"\n")
     csv         = CSV.parse(filecontent, :col_sep => obj_hash[:cellsep])#, obj_hash[:rowsep])
-    
+
     # read @datatype specific header
     header = csv.shift
     # remove comments sign from the header
@@ -312,7 +312,7 @@ class ExtCsv < OpenStruct
       checkValues = [(0...size).to_a, obj_values].transpose
       if ShunkSize < size
         container = []
-        (0..ShunkSize).collect {|i|
+        (0..size/ShunkSize).collect {|i|
           checkValues.values_at(*(lookup[i*ShunkSize,ShunkSize]))
         }.each {|v| v.each {|vv| container << vv} }
         checkValues = container
@@ -395,7 +395,7 @@ class ExtCsv < OpenStruct
     return self.class.new("hash","plain",h)
   end
   def clear
-    @table.each {|k,v| @table[k] = [] if v.kind_of?(Array)} 
+    @table.each {|k,v| @table[k] = [] if v.kind_of?(Array)}
   end
   def empty?
     return true if @table.empty?

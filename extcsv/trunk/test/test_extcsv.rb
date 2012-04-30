@@ -50,7 +50,7 @@ class TestExtCsv < Test::Unit::TestCase
     assert_equal(org.x2,td_by_str.x2)
   end
   def test_datasets
-    test_simple = ExtCsv.new(IMPORT_TYPE,"txt",TEST_DATA)
+    test_simple = ExtCsv.new(IMPORT_TYPE,"tsv",TEST_DATA)
     assert_equal(["100.0", "950.0"], test_simple.datasets("col1","col2")[29])
   end
   def test_csv
@@ -228,9 +228,10 @@ class TestExtCsv < Test::Unit::TestCase
   end
   def test_clear
     simple = ExtCsv.new(IMPORT_TYPE,"txt",TEST_DATA)
-    assert_equal(false, simple.col1.empty?)
+    mycol = simple.datacolumns[0]
+    assert_equal(false, simple.send(mycol).empty?)
     simple.clear
-    assert(simple.col1.empty?)
+    assert_equal(true, simple.send(mycol).empty?)
     assert(simple.empty?)
   end
   def test_each_by
