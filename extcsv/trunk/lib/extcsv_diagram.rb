@@ -1,8 +1,6 @@
 require 'rubygems'
 require 'gnuplot'
 require 'win32ole' if RUBY_PLATFORM =~ /(win32|cygwin)/i
-require 'extcsv_units'
-
 ################################################################################
 # Author: Ralf Müller
 #
@@ -159,7 +157,7 @@ module ExtCsvDiagram
   def ExtCsvDiagram.setOutput(plot,options)
     size = (options[:size].nil?) ? '' : " size #{options[:size]}"
     plot.terminal options[:terminal] + size
-    plot.output outputfilename + "." + options[:terminal].split(" ")[0]
+    plot.output options[:filename] + "." + options[:terminal].split(" ")[0]
   end
 
   def ExtCsvDiagram.addDataToPlot(plot,obj,xColumn,yColumn,groupBy,options)
@@ -177,7 +175,7 @@ module ExtCsvDiagram
   def ExtCsvDiagram.plot_xy(obj,xColumn,yColumn,title,options={})
     checkColumns(obj,xColumn,yColumn) unless options[:skipColumnCheck]
     options        = GRAPH_OPTIONS.merge(options)
-    outputfilename = (options[:filename].nil?) ? obj.filename : options[:filename]
+    #outputfilename = (options[:filename].nil?) ? obj.filename : options[:filename]
     groupBy        = (options[:groupBy]).nil? ? [] : options[:groupBy]
     Gnuplot.open {|gp|
       Gnuplot::Plot.new(gp) {|plot|
