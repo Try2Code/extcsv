@@ -30,7 +30,7 @@ end
 # ==== License: BSD - see {license file}[http:/extcsv.rubyforge.org/svn/extcsv/trunk/LICENSE]
 ################################################################################
 class ExtCsv < OpenStruct
-  VERSION = '0.12.0'
+  VERSION = '0.12.2'
 
   include Comparable
   include Enumerable
@@ -47,6 +47,9 @@ class ExtCsv < OpenStruct
 
   # Non-Data fields
   METADATA = %w{mode datatype datacolumns cellsep rowsep filename filemtime}
+
+  # ShunkSize for handling large objects with MRI
+  ShunkSize = 65536
 
   # mode can be one of the allowed MODES
   # datatype can be one of the TYPES
@@ -252,7 +255,7 @@ class ExtCsv < OpenStruct
       end
     }
     # default is the lookup in the whole array of values for each var
-    lookup = (0..@table[vars[0]].size-1).to_a
+    lookup = (0...@table[vars[0]].size).to_a
 
     vars.each { |var|
       operation = nil
@@ -304,14 +307,25 @@ class ExtCsv < OpenStruct
         raise
       end
       #test stdout << "\n NEW VALUE :::::::::::::::\n"
-      obj_values = @table[var]
-      obj_values = [(0..obj_values.size-1).to_a, obj_values].transpose.values_at(*lookup)
+      obj_values  = @table[var]
+      size        = @table[var].size
+      checkValues = [(0...size).to_a, obj_values].transpose
+      if ShunkSize < size
+        container = []
+        (0..ShunkSize).collect {|i|
+          checkValues.values_at(*(lookup[i*ShunkSize,ShunkSize]))
+        }.each {|v| v.each {|vv| container << vv} }
+        checkValues = container
+      else
+        checkValues = checkValues.values_at(*lookup)
+      end
       
       if operation.kind_of?(Regexp)
-        lookup = lookup & obj_values.find_all {|i,v| operation.match(v.to_s)}.transpose[0].to_a
+        lookup = lookup & checkValues.find_all {|i,v| operation.match(v.to_s)}.transpose[0].to_a
       else
-        lookup = lookup & obj_values.find_all {|i,v| 
-          next if v.nil? or v.empty?
+        lookup = lookup & checkValues.find_all {|i,v| 
+          next if v.nil?
+          next if v.empty? if v.respond_to?(:empty?)
           v = "'" + v + "'" if type == :string
           #test $stdout <<[v,operation,value].join(" ") << "\n"
           eval([v,operation,value].join(" "))

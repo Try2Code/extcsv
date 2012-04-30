@@ -520,4 +520,16 @@ class TestExtCsv < Test::Unit::TestCase
     d = c.columns(*c.datacolumns[-3..-1])
     assert_equal(c.datasets(*d.datacolumns),d.datasets)
   end
+  def test_MRI_bug
+    # MRI has problems with long list of optional arguments like
+    # values_at(*ins) where ins.size > 160000 (happens with large objects
+    # jruby works though
+    size  = 2*10**5+1
+    limit = size/2
+    a = (0...size).to_a.map(&:to_s)
+    a = (0...size).to_a
+    obj = ExtCsv.new("hash","plain",{:a => a})
+    upper = obj.selectBy(:a => "> #{limit}")
+    assert_equal(limit,upper.size)
+  end
 end
