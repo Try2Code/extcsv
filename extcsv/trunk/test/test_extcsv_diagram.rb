@@ -16,29 +16,41 @@ class TestExtCsvDisplay < Test::Unit::TestCase
   DATALOGGER_DATA = TEST_DIR + ""
   IMPORT_TYPE     = "file"
   ICON = "/home/ram/src/git/icon/experiments/xom.r8563.tsrel_R2B02_linDesity/xomFldminT.dat"
+  ICON = "/home/ram/src/git/icon/experiments/xom.r8563.tsrel_R2B02_200mThickness/xomFldmin.dat"
+  ICON = "/home/ram/src/git/icon/experiments/xom.r8563.tsrel_R2B02_500mThickness/xomFldmin.dat"
+  ICON = "/home/ram/src/git/icon/experiments/xom.r8563.tsrel_R2B02/xomFldmaxVert_Mixing_V.dat"
+  ICON = "/home/ram/src/git/icon/experiments/xom.r8563.tsrel_R2B02_200mThickness/xomFldmaxVert_Mixing_V.dat"
+  ICON = "/home/ram/src/git/icon/experiments/xom.r8563.tsrel_R2B02_500mThickness/xomFldmaxVert_Mixing_V.dat"
+  ICON = "/home/ram/src/git/icon/experiments/xom.r8563.tsrel_R2B02_dev/xomFldmaxVert_Mixing_V.dat"
+  ICON = "/home/ram/src/git/icon/experiments/xom.r8563.tsrel_R2B02_dev/xomFldmaxT.dat"
+  VAR = "Vert_Mixing_Vel"
+  VAR = "Vert_Mixing_V"
+  VAR = "T"
 
   def test_simple
     f=ExtCsv.new("file","txt",TEST_DATA)
-    ExtCsvDiagram.plot(f,["col4"],"col0",["col1"])
+    ExtCsvDiagram.plot_xy(f,"col5","col3",'') #,"col0",["col1"])
   end
-  def test_icon
+  def _test_icon
     icon = ExtCsv.new(IMPORT_TYPE,"psv",ICON)
-
-
-
-
 
     icon.datetime = []
     icon.date.each_with_index{|date,i| icon.datetime << [date,icon.time[i]].join(' ') }
 
-    [:date,:time,:depth,:temp].each {|col| pp [col.to_s,icon.send(col).max].join('[max]: ') }
-    ExtCsvDiagram.plot_xy(icon,"datetime","temp",'ICON OCE_BASE (lin. Desity): Min. Tempratures at different depths',
-                       :label_position => 'outside',:skipColumnCheck => true,
+    puts "SIZE: #{icon.size}"
+    [:date,:time,:depth,VAR.downcase.to_sym].each {|col| puts [col.to_s,icon.send(col).max].join('[max]: ') }
+    ExtCsvDiagram.plot_xy(icon,"datetime",VAR.downcase,'ICON OCE_BASE: Mean. Temperatur (uneven levels, r8656, full run: 2001-2012)',
+                       :label_position => 'below',:skipColumnCheck => true,
                          :type => 'lines',:groupBy => ["depth"],
-                         :yrange => '[-2.5:0.5]',:onlyGroupTitle => true,
+#                         :yrange => '[0.0001:10]',
+#                         :xrange => "",
+                         :onlyGroupTitle => true,
+#                         :addSettings => ["logscale y"],
 #                         :terminal => "png",
+                         :ylabel => "#{VAR} [degC]",
                          :input_time_format => "'%Y%m%d %H:%M:%S'",
-                         :filename => "icon",:output_time_format => "'%Y'",:size => "800,600")
+                         :filename => "icon-OCE_BASE_uneven-r8656-fullrun-Mean#{VAR}",
+                         :output_time_format => "'%m.%y'",:size => "800,600")
 
   end
   def test_plotxy
@@ -99,13 +111,14 @@ class TestExtCsvDisplay < Test::Unit::TestCase
   end
   def test_extcsv_diagram_limits
     td = ExtCsv.new("file","txt",TEST_DATA_NEW)
+    td.add(:step,(1...td.size).to_a)
     ExtCsvDiagram.plot(td[0,21],
-                       [:col1],
-                       :index,
-                       [:col3],
-                       :zeit,
-                       [:col8],
-                       'limit test', 
+                       ["col1"],
+                       :step,
+                       ["col3"],
+                       "step",
+                       ["col8"],
+                       'limit test',
                        :y1limits       => [1.9],
                        :y1limitname    => "y1 Limit",
                        :y2limits       => [8.2],

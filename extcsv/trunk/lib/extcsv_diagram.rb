@@ -109,7 +109,7 @@ module ExtCsvDiagram
   def ExtCsvDiagram.checkColumns(obj,*cols)
     cols.each {|col|
       next if col.kind_of?(Hash)
-      unless obj.datacolumns.include?(col)
+      unless obj.datacolumns.include?(col.to_s)
         print "[plot] Input data does NOT contain column '#{col.to_s}'\n"
         raise ArgumentError
       end

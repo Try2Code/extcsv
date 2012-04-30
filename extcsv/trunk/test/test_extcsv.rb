@@ -495,7 +495,7 @@ class TestExtCsv < Test::Unit::TestCase
     assert_nil(csv + simple0)
   end
   def test_version
-    assert_equal('0.12.0',ExtCsv::VERSION)
+    assert_equal('0.12.2',ExtCsv::VERSION)
   end
 
   def test_add
