@@ -319,11 +319,11 @@ class ExtCsv < OpenStruct
       else
         checkValues = checkValues.values_at(*lookup)
       end
-      
+
       if operation.kind_of?(Regexp)
         lookup = lookup & checkValues.find_all {|i,v| operation.match(v.to_s)}.transpose[0].to_a
       else
-        lookup = lookup & checkValues.find_all {|i,v| 
+        lookup = lookup & checkValues.find_all {|i,v|
           next if v.nil?
           next if v.empty? if v.respond_to?(:empty?)
           v = "'" + v + "'" if type == :string
