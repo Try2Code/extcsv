@@ -1,3 +1,8 @@
-h1. extcsv - Collection fo tools related to csv data and extensions to ruby's GSL bindings
+h1. extcsv - Toolset for csv data and extensions to ruby's GSL bindings
 
+This repository contains of several parts:
 
+* "ExtCsv":http://extcsv.rubyforge.org
+* spectral filter: high-, low and bandpass as well as bandblock for ruby's GSL bindings
+* correlation: correlation and autocorrelation for GSL::Vector class
+* convolution: convolution bases on GSL::Vector
