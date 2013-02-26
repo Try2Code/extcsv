@@ -60,6 +60,9 @@ module ExtCsvDiagram
   }
   @@timeColumns = %w[time time_camera zeit date datetime timestamp]
 
+  @@ColorLow = 0x0000ad
+  @@ColorUp  = 0xffffff
+
   def ExtCsvDiagram.set_pointlabel(obj, plot, x_col, x, y, label_col=nil, size='10')
     timemode = (%w[zeit zeitstempel time timestamp].include?(x_col.to_s))
     x.each_index {|i|
@@ -158,6 +161,13 @@ module ExtCsvDiagram
     size = (options[:size].nil?) ? '' : " size #{options[:size]}"
     plot.terminal options[:terminal] + size
     plot.output options[:filename] + "." + options[:terminal].split(" ")[0]
+  end
+
+  def ExtCsvDiagram.colors(nColors)
+    colors = []
+    step = (@@ColorUp - @@ColorLow)/(nColors-1)
+    nColors.times {|i| colors << "#"+(@@ColorLow + i*step).to_s(16)}
+    olors
   end
 
   def ExtCsvDiagram.addDataToPlot(plot,obj,xColumn,yColumn,groupBy,options)

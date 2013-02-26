@@ -1,12 +1,12 @@
 begin	
   require 'rubygems'
-  require 'rake/gempackagetask'
+  require 'rubygems/package_task'
 rescue Exception
   nil
 end
 require 'rake/clean'
 require 'rake/testtask'
-require 'rake/rdoctask'
+require 'rdoc/task'
 
 CLEAN.include('**/*.out')
 SPEC          = eval(File.open("gemspec","r").read)
@@ -50,14 +50,14 @@ end
 # ====================================================================
 # Create a task that will package the software into distributable
 # tar, zip and gem files.
-if ! defined?(Gem)
-  puts "Package Target requires RubyGEMs"
-else
-  package_task = Rake::GemPackageTask.new(SPEC) do |pkg|
-    pkg.need_zip = false
-    pkg.need_tar = false
-  end
-end
+# if ! defined?(Gem)
+#   puts "Package Target requires RubyGEMs"
+# else
+#   package_task = GemPackageTask.new(SPEC) do |pkg|
+#     pkg.need_zip = false
+#     pkg.need_tar = false
+#   end
+# end
 
 # ====================================================================
 desc "Build package for further developement"

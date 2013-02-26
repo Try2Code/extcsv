@@ -26,7 +26,7 @@ end
 # Have a look at my other projects for
 # correlation[http://extcsv.rubyforge.org/correlation] and {spectral filtering}[http://extcsv.rubyforge.org/spectralfilter].
 #
-# ==== Author: Ralf Müller
+# ==== Author: Ralf Mueller
 # ==== License: BSD - see {license file}[http:/extcsv.rubyforge.org/svn/extcsv/trunk/LICENSE]
 ################################################################################
 class ExtCsv < OpenStruct
@@ -128,7 +128,7 @@ class ExtCsv < OpenStruct
   # * empty lines are removed
   # * dots are changed into underscores for columns names
   # * commas are converteed into dots (german number notation) unless the commy is the cell separator
-  # * the greek sign µ is changes into mu
+  # * the greek sign for mu is changes into mu
   def parse_content(filecontent,obj_hash)
     content     = []
     # convert numbers into us. notation if this doesn't crashes with the columns separator

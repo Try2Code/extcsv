@@ -29,7 +29,10 @@ class TestExtCsvDisplay < Test::Unit::TestCase
 
   def test_simple
     f=ExtCsv.new("file","txt",TEST_DATA)
-    ExtCsvDiagram.plot_xy(f,"col5","col3",'') #,"col0",["col1"])
+    ExtCsvDiagram.plot_xy(f,"col5","col3",'',:groupBy => ['col2']) #,"col0",["col1"])
+  end
+  def test_colors
+    pp ExtCsvDiagram.colors(21)
   end
   def _test_icon
     icon = ExtCsv.new(IMPORT_TYPE,"psv",ICON)
