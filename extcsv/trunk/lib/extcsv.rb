@@ -36,7 +36,7 @@ class ExtCsv < OpenStruct
   include Enumerable
 
   # Allowed data types
-  TYPES = %w{csv ssv tsv psv txt plain}
+  TYPES = %w{csv ssv tsv psv bsv txt plain}
 
   # Allowed input modes, db and url are not supported, yet
   MODES = %w{file hash array string}
@@ -105,10 +105,11 @@ class ExtCsv < OpenStruct
   
   def set_separators(obj_hash)
     obj_hash[:cellsep]  = case obj_hash[:datatype]
-                          when "txt","tsv" then "\t"
-                          when "ssv"       then ';'
-                          when "csv"       then ','
-                          when "psv"       then "|"
+                          when "txt","tsv" then "\t"# tab separated
+                          when "ssv"       then ';' # semikolon separated
+                          when "csv"       then ',' # comma separated
+                          when "psv"       then "|" # pipe separated
+                          when "bsv"       then " " # blank separated
                           end
     obj_hash[:rowsep]   = "\r\n"
   end
@@ -156,7 +157,7 @@ class ExtCsv < OpenStruct
 
     # further processing according to the input type
     case obj_hash[:datatype]
-    when "csv","ssv","psv","txt","tsv"
+    when "csv","ssv","psv","txt","tsv","bsv"
       # check if rows have the same lenght
       contents_size = content.collect {|row| row.size}
       content.each_with_index {|row,i|
@@ -572,16 +573,16 @@ class ExtCsv < OpenStruct
   end
   
   # String output. See ExtCsvExporter.to_string
-  def to_string(stype,sort=true)
-    header = sort ? datacolumns.sort : datacolumns
+  def to_string(stype,header=nil,sort=true)
+    header = sort ? datacolumns.sort : datacolumns if header.nil?
       ExtCsvExporter.new("extcsv",
                             ([header] + 
                                datasets(*header)).transpose
                            ).to_string(stype)
   end
-  def to_file(filename, filetype="txt")
+  def to_file(filename, filetype="txt", columns)
     File.open(filename,"w") do |f|
-      f << to_string(filetype)
+      f << to_string(filetype,columns)
     end
   end
   
@@ -735,6 +736,8 @@ class ExtCsvExporter
       sep = "\t"
     when "psv"
       sep = "|"
+    when "bsv"
+      sep = " "
     when "xml" 
       out = to_xml
     when "tex"

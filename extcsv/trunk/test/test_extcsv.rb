@@ -37,6 +37,22 @@ class TestExtCsv < Test::Unit::TestCase
   def test_create_csv
     test_simple = ExtCsv.new(IMPORT_TYPE,"ssv",ERG_CSV_DATA)
   end
+  def test_create_bsv
+    test_bsv = ExtCsv.new(IMPORT_TYPE,"bsv","/home/ram/src/git/extcsv/extcsv/trunk/test/data/bsv.txt")
+    assert_equal([1,5,11,55].map(&:to_s),test_bsv.a)
+    assert_equal(4,test_bsv.datacolumns.size)
+    assert_equal("d",test_bsv.datacolumns[-1])
+    if 'thingol' == `hostname`.chomp
+      cmt = ExtCsv.new(IMPORT_TYPE,"bsv","/home/ram/tmp/gmt/jp_00.cmt")
+      pp cmt.size
+      cmt_ = cmt.selectBy(:lon => "> 140",:lat => "> 30")
+      pp cmt_.sizea
+      filename = "bsv_from_bsv.txt"
+      cmt_.to_file(filename)
+      cmtFromCsv = ExtCsv.new(IMPORT_TYPE,"bsv",filename)
+      cmtFromCsv.datacolumns.each {|col| assert_equal(cmtFromCsv.send(col),cmt_.send(col)) }
+    end
+  end
   def test_create_by_hash
     simple = ExtCsv.new("hash","txt",{:col1 => ["80.0"],:col2 => ["625.0"]})
     assert_equal(["80.0"],simple.col1)
