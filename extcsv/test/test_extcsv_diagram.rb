@@ -1,5 +1,5 @@
 $:.unshift File.join(File.dirname(__FILE__),"..","lib")
-require 'test/unit'
+require 'minitest/autorun'
 require 'extcsv'
 require 'extcsv_diagram'
 require 'pp'
@@ -7,7 +7,7 @@ require 'pp'
 ################################################################################
 # Author:: Ralf Müller
 ################################################################################
-class TestExtCsvDisplay < Test::Unit::TestCase
+class TestExtCsvDisplay < Minitest::Test
   include ExtCsvDiagram
 
   TEST_DIR        = "test"
