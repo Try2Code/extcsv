@@ -62,6 +62,14 @@ class TestExtCsvDisplay < Minitest::Test
                        :label_position => 'outside',
                        :groupBy => [:col4],
                          :type => 'lines')
+    f = ExtCsv.new('file',"txt","#{ENV['HOME']}/data/icon/oce.txt")
+
+    f.add(:datetime,[f.date,f.time].transpose.map {|v| v.join(' ')})
+    pp f.datetime
+    ExtCsvDiagram.plot_xy(f.selectBy(:level => 3000),'datetime',
+                          'temp','icon text input',
+                          :input_time_format => "'%Y-%m-%d %H:%M:%S'",
+                          :output_time_format => "'%d.%m'")
   end
   def test_gnuplot
     test_file = TEST_DATA
