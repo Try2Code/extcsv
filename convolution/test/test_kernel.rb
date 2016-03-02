@@ -2,9 +2,7 @@ $:.unshift File.join(File.dirname(__FILE__),"..","lib")
 require 'test/unit'
 require 'convolution'
 require 'pp'
-require 'rubygems'
-#require 'tube_data'
-#require 'tube_data_display'
+require 'unifiedPlot'
 include CPlot
 include Convolution
 
@@ -153,6 +151,28 @@ class TestConv < Test::Unit::TestCase
     assert_equal(10,cukNew.y.size)
     #GSL::graph(cukNew.x,cukNew.y,f.y)
     assert_equal(cuk.y[1..-2],cukNew.y[1..-2])
+  end
+
+  def test_waves
+    @n        = 2048
+    @sampling = 2000   # 2 kHz
+    @tmax     = 1.0/@sampling*@n
+    @freq1    = 50
+    @freq2    = 120
+    @freq3    = 500
+    @freq4    = 550
+
+    t = GSL::Vector.linspace(0,@tmax, @n)
+    x = GSL::Sf::sin(2*Math::PI*@freq1*t)/4.0 +
+        GSL::Sf::sin(2*Math::PI*@freq2*t)/4.0 +
+        GSL::Sf::sin(2*Math::PI*@freq3*t)/4.0 +
+        GSL::Sf::sin(2*Math::PI*@freq4*t)/4.0
+
+    UnifiedPlot.linePlot(:x => t,:y => x,:style => 'lines')
+
+    uk     = mydiscreteinstantUnitKernel(50)
+    cukNew = Convolution.convolute(OpenStruct.new(:x => t, :y => x),uk)
+    UnifiedPlot.linePlot(:x => cukNew.x,:y => cukNew.y,:style => 'lines')
   end
 
   def test_interp
