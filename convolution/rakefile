@@ -6,7 +6,7 @@ rescue Exception
 end
 require 'rake/clean'
 require 'rake/testtask'
-require 'rake/rdoctask'
+require 'rdoc/task'
 
 #CLEAN.include('**/*.o')
 #CLOBBER.include('test/output/*')

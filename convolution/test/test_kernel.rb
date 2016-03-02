@@ -3,9 +3,8 @@ require 'test/unit'
 require 'convolution'
 require 'pp'
 require 'rubygems'
-require 'tube_data'
-require 'tube_data_display'
-require 'text/highlight'
+#require 'tube_data'
+#require 'tube_data_display'
 include CPlot
 include Convolution
 
@@ -14,8 +13,6 @@ class TestConv < Test::Unit::TestCase
   MAINDIR = "/cygdrive/d/src/temple2depth/"
   TESTDATADIR = MAINDIR + "test/data"
   TESTDATAFILE = "Tempel3_0A.txt"
-  @@hl = Text::ANSIHighlighter.new
-  String.highlighter = @@hl
 
   def instantLinKernel
     ConvolutionKernel.new("lin",2,4)
@@ -60,49 +57,49 @@ class TestConv < Test::Unit::TestCase
       assert_equal(1.0.to_s,mydiscreteinstantUnitKernel(wd,4).integral.to_s)
     }
   end
-  def test_conv
-    width = 2
-    lk    = instantLinKernel
-    uk    = mydiscreteinstantUnitKernel(width)
-    width = 5
-    lk    = myinstantLinKernel(width)
-    uk    = mydiscreteinstantUnitKernel(width)
-    x,int = GSL::Vector.filescan(TESTDATADIR+"/"+TESTDATAFILE)
-    f     = OpenStruct.new
-    f.y   = int
-    f.x   = x
-    clk   = Convolution.conv(f,lk)
-    cuk   = Convolution.conv(f,uk)
+# def test_conv
+#   width = 2
+#   lk    = instantLinKernel
+#   uk    = mydiscreteinstantUnitKernel(width)
+#   width = 5
+#   lk    = myinstantLinKernel(width)
+#   uk    = mydiscreteinstantUnitKernel(width)
+#   x,int = GSL::Vector.filescan(TESTDATADIR+"/"+TESTDATAFILE)
+#   f     = OpenStruct.new
+#   f.y   = int
+#   f.x   = x
+#   clk   = Convolution.conv(f,lk)
+#   cuk   = Convolution.conv(f,uk)
 #   [f,clk,cuk].each {|ff| $stdout << ff.y.class << "\n"}
-
-   td = TubeData.new("hash","plain",{
-     :x => f.x.to_a, 
-     :y => f.y.to_a,
-     :clk => clk.y.to_a,
-     :cuk => cuk.y.to_a,
-     :diff_y_l => ((f.y - clk.y)/f.y.max).to_a,
-     :diff_y_u => ((f.y - cuk.y)/f.y.max).to_a,
-     :diff_l_u => (clk.y - cuk.y).to_a
-   })
-
-   TubeDiagram.plot(td,
-                    [],
-                    :x,
-                    [
-                   :y,
-                   :clk,
-                    :cuk,
-                     :diff_y_l,
-                     :diff_y_u,
-                      :diff_l_u
-                    ],
-                    '','','',
-                    :type => "lines",
-                    :linewidth => 1,
-                    :xrange => '[80:130]',
-                    :xrange => '[:]',
-                    :yrange => '[:]')
-  end
+#
+#  td = TubeData.new("hash","plain",{
+#    :x => f.x.to_a, 
+#    :y => f.y.to_a,
+#    :clk => clk.y.to_a,
+#    :cuk => cuk.y.to_a,
+#    :diff_y_l => ((f.y - clk.y)/f.y.max).to_a,
+#    :diff_y_u => ((f.y - cuk.y)/f.y.max).to_a,
+#    :diff_l_u => (clk.y - cuk.y).to_a
+#  })
+#
+#  TubeDiagram.plot(td,
+#                   [],
+#                   :x,
+#                   [
+#                  :y,
+#                  :clk,
+#                   :cuk,
+#                    :diff_y_l,
+#                    :diff_y_u,
+#                     :diff_l_u
+#                   ],
+#                   '','','',
+#                   :type => "lines",
+#                   :linewidth => 1,
+#                   :xrange => '[80:130]',
+#                   :xrange => '[:]',
+#                   :yrange => '[:]')
+# end
 
   def test_bench
     f         = OpenStruct.new
@@ -182,32 +179,32 @@ class TestConv < Test::Unit::TestCase
 #      x_enl = f.x
       x_enl.each {|x_| datasets[datakeys[i]] << interp.eval(x_)}
     }
-   td = TubeData.new("hash","plain",{
-     :x => x_enl.to_a,#f.x.to_a, 
-     :y => datasets[:y].to_a,
-     :clk => datasets[:clk].to_a,
-     :cuk => datasets[:cuk].to_a#,
+#  td = TubeData.new("hash","plain",{
+#    :x => x_enl.to_a,#f.x.to_a, 
+#    :y => datasets[:y].to_a,
+#    :clk => datasets[:clk].to_a,
+#    :cuk => datasets[:cuk].to_a#,
 #     :diff_y_l => ((f.y - clk.y)/f.y.max).to_a,
 #     :diff_y_u => ((f.y - cuk.y)/f.y.max).to_a,
 #     :diff_l_u => (clk.y - cuk.y).to_a
-   })
-   TubeDiagram.plot(td,
-                    [],
-                    :x,
-                    [
-                   :y,
-                   :clk,
-                    :cuk#,
+#  })
+#  TubeDiagram.plot(td,
+#                   [],
+#                   :x,
+#                   [
+#                  :y,
+#                  :clk,
+#                   :cuk#,
 #                     :diff_y_l,
 #                     :diff_y_u,
 #                      :diff_l_u
-                    ],
-                    '','','',
-                    :type => "lines",
-                    :linewidth => 1,
-                    :xrange => '[50:150]',
+#                   ],
+#                   '','','',
+#                   :type => "lines",
+#                   :linewidth => 1,
+#                   :xrange => '[50:150]',
 #                    :xrange => '[:]',
-                    :yrange => '[:]')
+#                   :yrange => '[:]')
   end
 
   def test_compute_depth(file, plot=true, mode=:min)
@@ -233,23 +230,23 @@ class TestConv < Test::Unit::TestCase
     xr = xr[0...(size-borderwidth)]
     yr = yr[0...(size-borderwidth)]
 
-    if plot 
-      td = TubeData.new("hash","plain",{
-        :x => ck.x.to_a,
-        :y => ck.y.to_a
-      })
-      td.gnuplot('x',['y'],:mode => 'free',:graph_title => file)
-      td = TubeData.new("hash","plain",{
-        :xl => xl.to_a,
-        :yl => yl.to_a
-      })
-      td.gnuplot('xl',['yl'],:mode => 'free',:xrange => "[#{xl[0]}:#{xl[-1]}]",:graph_title => file)
-      td = TubeData.new("hash","plain",{
-        :xr => xr.to_a,
-        :yr => yr.to_a
-      })
-      td.gnuplot('xr',['yr'],:mode => 'free',:xrange => "[#{xr[0]}:#{xr[-1]}]",:graph_title => file)
-    end
+  # if plot 
+  #   td = TubeData.new("hash","plain",{
+  #     :x => ck.x.to_a,
+  #     :y => ck.y.to_a
+  #   })
+  #   td.gnuplot('x',['y'],:mode => 'free',:graph_title => file)
+  #   td = TubeData.new("hash","plain",{
+  #     :xl => xl.to_a,
+  #     :yl => yl.to_a
+  #   })
+  #   td.gnuplot('xl',['yl'],:mode => 'free',:xrange => "[#{xl[0]}:#{xl[-1]}]",:graph_title => file)
+  #   td = TubeData.new("hash","plain",{
+  #     :xr => xr.to_a,
+  #     :yr => yr.to_a
+  #   })
+  #   td.gnuplot('xr',['yr'],:mode => 'free',:xrange => "[#{xr[0]}:#{xr[-1]}]",:graph_title => file)
+  # end
 
     # find extremum
     minl =  xl[yl.max_index]

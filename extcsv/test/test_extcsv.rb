@@ -38,20 +38,10 @@ class TestExtCsv < Test::Unit::TestCase
     test_simple = ExtCsv.new(IMPORT_TYPE,"ssv",ERG_CSV_DATA)
   end
   def test_create_bsv
-    test_bsv = ExtCsv.new(IMPORT_TYPE,"bsv","/home/ram/src/git/extcsv/extcsv/trunk/test/data/bsv.txt")
+    test_bsv = ExtCsv.new(IMPORT_TYPE,"bsv",TEST_DATA_DIR + "bsv.txt")
     assert_equal([1,5,11,55].map(&:to_s),test_bsv.a)
     assert_equal(4,test_bsv.datacolumns.size)
     assert_equal("d",test_bsv.datacolumns[-1])
-    if 'thingol' == `hostname`.chomp
-      cmt = ExtCsv.new(IMPORT_TYPE,"bsv","/home/ram/tmp/gmt/jp_00.cmt")
-      pp cmt.size
-      cmt_ = cmt.selectBy(:lon => "> 140",:lat => "> 30")
-      pp cmt_.sizea
-      filename = "bsv_from_bsv.txt"
-      cmt_.to_file(filename)
-      cmtFromCsv = ExtCsv.new(IMPORT_TYPE,"bsv",filename)
-      cmtFromCsv.datacolumns.each {|col| assert_equal(cmtFromCsv.send(col),cmt_.send(col)) }
-    end
   end
   def test_create_by_hash
     simple = ExtCsv.new("hash","txt",{:col1 => ["80.0"],:col2 => ["625.0"]})
@@ -268,7 +258,7 @@ class TestExtCsv < Test::Unit::TestCase
   def test_operate
     simple = ExtCsv.new(IMPORT_TYPE,"txt",TEST_DATA)
     simple_operated  = simple.operate_on(:col1,"* 10")
-    assert_not_equal(simple.col1, simple_operated)
+    assert(simple.col1 != simple_operated.col1, "unexpected equality")
     thiscol1 = 80.0
     col1s = simple.col1.dup
     simple_op_with_ifclause = simple.operate_on(:col1, '* 10 if self.col1[i].to_f == ' + thiscol1.to_s)

@@ -1,10 +1,25 @@
 require 'rubygems'
-require 'extcsv'
-require 'extcsv_diagram'
 require 'gsl'
 require 'ostruct'
-require 'arraylinspace'
 
+class Array
+  def Array.linspaceByPartition(min,max,partition)
+    #$stdout << min
+    min, max = min.to_f, max.to_f
+    #$stdout << min
+    ret = []
+    step=(min-max).abs/partition 
+    (0..partition).each {|i| ret << min + i * step}
+    ret
+  end
+  def Array.linspaceBySize(min,max,size)
+    min, max = min.to_f, max.to_f
+    ret = []
+    step=(min-max).abs/(size - 1.0)
+    (0...size).each {|i| ret << min + i * step}
+    ret
+  end
+end
 class ConvolutionKernel
   attr_reader :ktype, :kwidth, :kpartition, :x, :w
   def initialize(ktype, kwidth, kpartition)
@@ -86,8 +101,7 @@ module Convolution
     ret
   end
   def conv(f,g)
-    y = GSL::Vector.alloc(1)
-    y.pop
+    y = []
     (0...f.x.size).each {|n| y << conv_step(f,g,n)}
     OpenStruct.new(:x => f.x.dup,:y => y)
   end
@@ -104,8 +118,8 @@ module Convolution
   end
   def convolute(f,g)
     width = g.w.size/2.to_i
-    conv = GSL::Vector.alloc(1)
-    conv.shift
+
+    conv = []
     fExp = expand(f.y,width)
     (width...fExp.size-width).each {|i| 
       conv << fExp[i-width..i+width]*g.w.col
