@@ -15,17 +15,6 @@ class TestExtCsvDisplay < Minitest::Test
   TEST_DATA_NEW   = TEST_DIR + "/data/file01.txt"
   DATALOGGER_DATA = TEST_DIR + ""
   IMPORT_TYPE     = "file"
-  ICON = "/home/ram/src/git/icon/experiments/xom.r8563.tsrel_R2B02_linDesity/xomFldminT.dat"
-  ICON = "/home/ram/src/git/icon/experiments/xom.r8563.tsrel_R2B02_200mThickness/xomFldmin.dat"
-  ICON = "/home/ram/src/git/icon/experiments/xom.r8563.tsrel_R2B02_500mThickness/xomFldmin.dat"
-  ICON = "/home/ram/src/git/icon/experiments/xom.r8563.tsrel_R2B02/xomFldmaxVert_Mixing_V.dat"
-  ICON = "/home/ram/src/git/icon/experiments/xom.r8563.tsrel_R2B02_200mThickness/xomFldmaxVert_Mixing_V.dat"
-  ICON = "/home/ram/src/git/icon/experiments/xom.r8563.tsrel_R2B02_500mThickness/xomFldmaxVert_Mixing_V.dat"
-  ICON = "/home/ram/src/git/icon/experiments/xom.r8563.tsrel_R2B02_dev/xomFldmaxVert_Mixing_V.dat"
-  ICON = "/home/ram/src/git/icon/experiments/xom.r8563.tsrel_R2B02_dev/xomFldmaxT.dat"
-  VAR = "Vert_Mixing_Vel"
-  VAR = "Vert_Mixing_V"
-  VAR = "T"
 
   def test_simple
     f=ExtCsv.new("file","txt",TEST_DATA)
@@ -33,28 +22,6 @@ class TestExtCsvDisplay < Minitest::Test
   end
   def test_colors
     pp ExtCsvDiagram.colors(21)
-  end
-  def _test_icon
-    icon = ExtCsv.new(IMPORT_TYPE,"psv",ICON)
-
-    icon.datetime = []
-    icon.date.each_with_index{|date,i| icon.datetime << [date,icon.time[i]].join(' ') }
-
-    puts "SIZE: #{icon.size}"
-    [:date,:time,:depth,VAR.downcase.to_sym].each {|col| puts [col.to_s,icon.send(col).max].join('[max]: ') }
-    ExtCsvDiagram.plot_xy(icon,"datetime",VAR.downcase,'ICON OCE_BASE: Mean. Temperatur (uneven levels, r8656, full run: 2001-2012)',
-                       :label_position => 'below',:skipColumnCheck => true,
-                         :type => 'lines',:groupBy => ["depth"],
-#                         :yrange => '[0.0001:10]',
-#                         :xrange => "",
-                         :onlyGroupTitle => true,
-#                         :addSettings => ["logscale y"],
-#                         :terminal => "png",
-                         :ylabel => "#{VAR} [degC]",
-                         :input_time_format => "'%Y%m%d %H:%M:%S'",
-                         :filename => "icon-OCE_BASE_uneven-r8656-fullrun-Mean#{VAR}",
-                         :output_time_format => "'%m.%y'",:size => "800,600")
-
   end
   def test_plotxy
     f = ExtCsv.new(IMPORT_TYPE,"txt",TEST_DATA)
@@ -64,6 +31,7 @@ class TestExtCsvDisplay < Minitest::Test
                          :type => 'lines')
     f = ExtCsv.new('file',"txt","#{ENV['HOME']}/data/icon/oce.txt")
 
+    assert(f.size > 0,'no data in input or file missing!')
     f.add(:datetime,[f.date,f.time].transpose.map {|v| v.join(' ')})
     pp f.datetime
     ExtCsvDiagram.plot_xy(f.selectBy(:level => 3000),'datetime',
@@ -78,7 +46,7 @@ class TestExtCsvDisplay < Minitest::Test
     qpol_drift = ExtCsv.new(IMPORT_TYPE,"txt",drift_test_file)
 
     f = qpol.selectBy(:col4 => /(5|4)/)
-    assert_not_equal(0,f.size)
+    assert(0 < f.size,'Fount sero data!')
     ExtCsvDiagram.plot(f,["col4"],"col1",
                        ["col5"],nil,[],'',
                        :graph_title => "SIZEMODE",

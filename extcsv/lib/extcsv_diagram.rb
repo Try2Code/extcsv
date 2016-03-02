@@ -167,7 +167,7 @@ module ExtCsvDiagram
     colors = []
     step = (@@ColorUp - @@ColorLow)/(nColors-1)
     nColors.times {|i| colors << "#"+(@@ColorLow + i*step).to_s(16)}
-    olors
+    colors
   end
 
   def ExtCsvDiagram.addDataToPlot(plot,obj,xColumn,yColumn,groupBy,options)
