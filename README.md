@@ -1,4 +1,4 @@
-h1. extcsv - Toolset for csv data and extensions to ruby's GSL bindings
+# extcsv - Toolset for csv data and extensions to ruby's GSL bindings
 
 This repository contains of several parts:
 
