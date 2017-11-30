@@ -1,5 +1,6 @@
 require 'gsl'
 require 'mathn'
+require 'unifiedPlot'
 
 # = Spectral analysis and filtering
 # project page: http://rubyforge.org/projects/extcsv
@@ -52,7 +53,8 @@ class SpectralFilter
   # Display the spectrum
   def plotSpec(opts="-C -g 3 -x 0 #{@sampling/2} -X 'Frequency [Hz]'")
     mag, phase, frq = proc4plot
-    GSL::graph(frq, mag, opts)
+#   GSL::graph(frq, mag, opts)
+    UnifiedPlot.linePlot({x: frq,y: mag})
   end
 
   # Display Datasets before and aftern Filtering

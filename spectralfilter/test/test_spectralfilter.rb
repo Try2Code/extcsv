@@ -1,10 +1,11 @@
 $:.unshift File.join(File.dirname(__FILE__),"..","lib")
 require 'test/unit'
 require 'spectralfilter'
+require 'unifiedPlot'
 
 class TestSpectralFilter < Test::Unit::TestCase
   N = 2048
-  SAMPLING = 2000   # 2 kHz
+  SAMPLING = 200   # 2 kHz
   TMAX = 1.0/SAMPLING*N
   FREQ1 = 50
   FREQ2 = 120
@@ -17,19 +18,23 @@ class TestSpectralFilter < Test::Unit::TestCase
         GSL::Sf::sin(2*Math::PI*FREQ3*t) + \
         GSL::Sf::sin(2*Math::PI*FREQ4*t)
 
+
+    UnifiedPlot.linePlot({x: t,y: x})
     sf = SpectralFilter.new(t,x)
     opts ="-C -g 3 -x 0 700 "
-    sf.plotSpec(opts + "-L'Original Data'")
+#   sf.plotSpec(opts + "-L'Original Data'")
     sf.lowpass(60)
+    UnifiedPlot.linePlot({x: sf.x,y: sf.fft})
     sf.plotSpec(opts + "-L 'lowpass(60)'")
     sf.renew
     sf.highpass(450)
-    sf.plotSpec(opts + "-L 'highpass(450)'")
+    UnifiedPlot.linePlot({x: t,y: sf.x})
+#   sf.plotSpec(opts + "-L 'highpass(450)'")
     sf.renew
     sf.bandpass(100,520)
-    sf.plotSpec(opts + "-L 'bandpass(100,520)'")
+#   sf.plotSpec(opts + "-L 'bandpass(100,520)'")
     sf.renew
     sf.bandblock(100,520)
-    sf.plotSpec(opts + "-L 'bandblock(100,520)'")
+#   sf.plotSpec(opts + "-L 'bandblock(100,520)'")
   end
 end
